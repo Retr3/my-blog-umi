@@ -6,6 +6,7 @@
 /*上传*/
 .my-upload {
     box-sizing: border-box;
+    height:300px!important;
     margin: 0;
     padding: 0;
     color: rgba(0,0,0,0.65);
@@ -15,6 +16,7 @@
     list-style: none;
     font-feature-settings: 'tnum';
     outline: 0;
+
 }
 .my-upload-drag-icon{
     color: #40a9ff;
@@ -29,4 +31,11 @@
 .my-upload-hint{
     color: rgba(0,0,0,0.45);
     font-size: 14px;
+}
+.spin-style{
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
 }

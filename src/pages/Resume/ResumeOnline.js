@@ -11,10 +11,10 @@ export default function() {
         <Descriptions.Item label="职业">前端攻城狮</Descriptions.Item>
         <Descriptions.Item label="毕业院校">XXXX大学</Descriptions.Item>
         <Descriptions.Item label="联系电话">12312354678</Descriptions.Item>
-        <Descriptions.Item label="邮箱" span={2}>123@123.com</Descriptions.Item>
+        <Descriptions.Item label="邮箱">123@123.com</Descriptions.Item>
         <Descriptions.Item label="工作城市">上海</Descriptions.Item>
-        <Descriptions.Item label="工作时间" span={2}>3年</Descriptions.Item>
-        <Descriptions.Item label="求职意向" span={4}>最多30个字</Descriptions.Item>
+        <Descriptions.Item label="工作时间" >3年</Descriptions.Item>
+        <Descriptions.Item label="求职意向" >最多30个字</Descriptions.Item>
         <Descriptions.Item label="Discount">$20.00</Descriptions.Item>
         <Descriptions.Item label="Official Receipts">$60.00</Descriptions.Item>
         <Descriptions.Item label="Config Info">
