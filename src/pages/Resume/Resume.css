@@ -1,12 +1,52 @@
 .resume-dom{
     background: #ffffff;
     height: 100%;
-    weight:100%;
 }
-/*上传*/
+.resume-info{
+    padding:16px;
+}
+.switch-style{
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    font-size:22px;
+}
+.month-panel{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
+    text-align: center;
+}
+.month-picker{
+    margin-bottom: 10px;
+}
+.skill-panel{
+    display: flex;
+    align-items: center;
+}
+.skills-text{
+    margin-right:50px;
+}
+.timeLine-panel{
+    padding:16px;
+}
+
+.timeline-textarea{
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+.resume-backup{
+    right: 19px;
+    bottom: 30px;
+}
+/*上传页*/
+.col-upload{
+    height:300px;
+}
 .my-upload {
     box-sizing: border-box;
-    height:300px!important;
     margin: 0;
     padding: 0;
     color: rgba(0,0,0,0.65);
@@ -16,7 +56,6 @@
     list-style: none;
     font-feature-settings: 'tnum';
     outline: 0;
-
 }
 .my-upload-drag-icon{
     color: #40a9ff;
@@ -38,4 +77,37 @@
     justify-content: center;
     align-items: center;
     flex-flow: column;
+}
+.upload-progress{
+    margin-bottom: 20px!important;
+}
+/*文件列表*/
+.filelist{
+    min-height:169px;
+}
+.fileinfo-empty{
+    min-height:190px
+}
+.filelist-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e8e8e8!important;
+}
+.filelist-item .item-operate{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    min-width: 80px;
+}
+.filelist-item span{
+    color:#40a9ff;
+    font-weight:500;
+    cursor: pointer;
+}
+.filelist-item .item-operate div{
+    cursor: pointer;
+}
+.fileInfo{
+    color:#40a9ff
 }

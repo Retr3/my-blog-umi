@@ -7,6 +7,11 @@ export default {
         title: 'blog后台管理',
         antd: true,
         dva: true,
+        locale: {
+          enable: true, 
+          default: 'zh-CN',
+          baseNavigator: true
+        }
       },
     ],
   ],

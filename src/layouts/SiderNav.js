@@ -29,7 +29,7 @@ const menus = [
     key: '/resume',
     subs: [
       {title:'在线简历',icon:'',key:'/resume/online'},
-      {title:'简历上传',icon:'',key:'/resume/upload'}
+      {title:'附件简历上传',icon:'',key:'/resume/upload'}
     ]
   },
   {
@@ -121,7 +121,7 @@ class SiderNav extends React.Component{
   render() {
     const {collapsed,selectKeys} = this.props;
     return (
-      <Sider style={{height:'100vh'}} trigger={null}  collapsible collapsed={collapsed}>
+      <Sider style={{minHeight:'100vh',overflow:'auto'}} trigger={null}  collapsible collapsed={collapsed}>
           <div className={styles.logo} />
           <Menu theme="dark" mode="inline"  onOpenChange={this.onOpenChange} openKeys={this.state.openKeys} selectedKeys={selectKeys}>
             {menus.map(item=>{

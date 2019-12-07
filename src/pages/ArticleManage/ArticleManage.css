@@ -1,4 +1,16 @@
 
-.normal {
-  background: #F27983;
+.search-panel{
+  box-sizing: border-box;
+  margin: 0;
+  color: #333333;
+  font-size: 14px;
+  position: relative;
+  padding: 16px 24px;
+  background-color: #fff;
+}
+.search-input{
+  margin:20px;
+}
+.add-panel{
+  border-top: 1px solid #bfbfbf;
 }

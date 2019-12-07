@@ -8,3 +8,19 @@ html, body, #root {
 body {
   margin: 0;
 }
+#resumeDom .ant-form-item {
+  margin-bottom: 0px;
+}
+#article{
+  min-height:756px;
+}
+#article .ant-btn{
+  color: #fff; 
+  background-color: #f4516c;
+  border-color: #f4516c;
+}
+#article .ant-btn :hover, .ant-btn:focus{
+  color: #fff; 
+  background-color: #f4516c;
+  border-color: #f4516c;
+}

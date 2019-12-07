@@ -17,7 +17,7 @@ export default {
                 const { data } = yield call(getAbilityInfo);
                 yield put({ type: "abilityInit", ability: data });
             }catch(err){
-
+                console.log(err);
             }
         }
     },
