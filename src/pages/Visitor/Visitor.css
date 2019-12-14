@@ -1,0 +1,25 @@
+
+.visitor-dom{
+  height: 100%;
+  padding:16px 24px;
+}
+.visitor-titlepanel{
+  margin-bottom: 20px;
+}
+.title-card{
+  text-align: center;
+  border-right: 1px solid #e8e8e8
+}
+.visitor-tablepanel{
+  background: #ffffff;
+  padding:20px 20px 20px 0;
+  min-height:728px
+}
+.icon-action{
+  color: #1890ff;
+  cursor:pointer;
+}
+.visitor-backup{
+  right: 19px;
+  bottom: 30px;
+}

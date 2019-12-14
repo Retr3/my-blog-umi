@@ -52,9 +52,17 @@ export default {
           component: '././Resume/ResumeUpload'
         },
         {
-          component: './NotFound',
+          path: '/visitor',
+          component: './Visitor/Visitor'
         },
-      ],
+        {
+          path: '/personal',
+          component: './Personal/Personal'
+        },
+        {
+          component: './NotFound',
+        }
+      ]
     },
   ],
 };

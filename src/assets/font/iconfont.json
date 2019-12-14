@@ -69,6 +69,13 @@
       "unicode_decimal": 58896
     },
     {
+      "icon_id": "7285184",
+      "name": "黑名单",
+      "font_class": "blacklist",
+      "unicode": "e62a",
+      "unicode_decimal": 58922
+    },
+    {
       "icon_id": "8576574",
       "name": "cpu",
       "font_class": "cpu",

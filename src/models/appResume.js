@@ -21,6 +21,7 @@ export default {
                 const { data } = yield call(getFileList);
                 yield put({ type: "setFileList", fileListData: data.fileListData });
             }catch(err){
+                message.error("文件列表获取失败");
                 console.log(err);
             }
         },

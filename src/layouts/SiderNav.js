@@ -17,11 +17,7 @@ const menus = [
   {
     title: '访客管理',
     icon: 'team',
-    key: '/visitor',
-    subs: [
-      {title:'前台访客',icon:'',key:'/visitor/a'},
-      {title:'后台访客',icon:'',key:'/visitor/b'}
-    ]
+    key: '/visitor'
   },
   {
     title: '简历管理',
@@ -38,9 +34,9 @@ const menus = [
     key: '/pic'
   },
   {
-    title:'用户管理',
+    title:'个人中心',
     icon: 'user',
-    key: '/user'
+    key: '/personal'
   }
 ];
 

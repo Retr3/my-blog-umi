@@ -14,3 +14,26 @@
 .add-panel{
   border-top: 1px solid #bfbfbf;
 }
+/* add or update */
+.braft-dom{
+  border-radius: 10px;
+  border:1px solid #d9d9d9;
+}
+.article-backup{
+  right: 24px!important;
+  bottom: 16px!important;
+}
+
+.upload-item{
+  width:100%;
+  height:50px;
+}
+.cover-upload{
+  width:100%;
+  height:100%;
+}
+.select-picture-card {
+  font-size: 32px;
+  color: #999;
+  width:100%;
+}
