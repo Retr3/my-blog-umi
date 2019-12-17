@@ -19,6 +19,7 @@
     "dva": "^2.6.0-beta.6",
     "html-table-to-json": "^0.4.1",
     "prismjs": "^1.17.1",
+    "rc-tween-one": "^2.6.8",
     "react": "^16.8.6",
     "react-color": "^2.17.3",
     "react-dom": "^16.8.6"

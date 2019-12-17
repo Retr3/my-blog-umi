@@ -29,7 +29,7 @@ const menus = [
     ]
   },
   {
-    title:'图片管理',
+    title:'画廊',
     icon: 'picture',
     key: '/pic'
   },

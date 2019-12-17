@@ -1,5 +1,7 @@
-import darkTheme from '@ant-design/dark-theme';
-import aliyunTheme from '@ant-design/aliyun-theme';
+//import darkTheme from '@ant-design/dark-theme';
+//import aliyunTheme from '';
+const darkTheme = require('@ant-design/dark-theme');
+const aliyunTheme = require('@ant-design/aliyun-theme');
 const orange = {'@primary-color': '#faad14'};
 const green = {'@primary-color': '#52c41a'};
 const purple = {'@primary-color': '#722ED1'};
@@ -70,6 +72,6 @@ const cyberpunk = {
   };
 let choose = defaultCOlor;
 
-export default {
-    "theme":darkTheme
+module.exports = {
+  orange
 }

@@ -13,7 +13,7 @@ export default {
           baseNavigator: true
         }
       },
-    ],
+    ]
   ],
   routes: [
     {

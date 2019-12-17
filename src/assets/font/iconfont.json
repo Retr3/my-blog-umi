@@ -20,6 +20,20 @@
       "unicode_decimal": 58903
     },
     {
+      "icon_id": "2106261",
+      "name": "职位",
+      "font_class": "post",
+      "unicode": "e625",
+      "unicode_decimal": 58917
+    },
+    {
+      "icon_id": "2252336",
+      "name": "位置",
+      "font_class": "location2",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
       "icon_id": "2679458",
       "name": "密码",
       "font_class": "password",
@@ -74,6 +88,13 @@
       "font_class": "blacklist",
       "unicode": "e62a",
       "unicode_decimal": 58922
+    },
+    {
+      "icon_id": "7836367",
+      "name": "结构图",
+      "font_class": "cluster",
+      "unicode": "e71d",
+      "unicode_decimal": 59165
     },
     {
       "icon_id": "8576574",

@@ -1,6 +1,7 @@
 @import './assets/font/iconfont.css';
 @import './layouts/HeaderBar.css';
 @import './pages/Login/index.css';
+@import './components/PanThumb/PanThumb.css';
 html, body, #root {
   height: 100%;
 }

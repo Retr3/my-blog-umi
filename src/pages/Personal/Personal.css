@@ -1,4 +1,64 @@
 
-.normal {
-  background: #F28D79;
+.panel-body{
+  min-height:500px;
+}
+.avatar-head{
+  position: absolute!important;
+  top: 30%;
+  left: 34%;
+  border: 5px solid #fff;
+  background-color: #fff;
+  margin: auto;
+  border-radius: 50%;
+}
+.avatar-upload{
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column;
+  cursor:pointer;
+}
+.avatar-upload :hover{
+  color:#1890ff
+}
+.avatar-text{
+  text-align: center;
+}
+.avatar-name{
+  margin-top:36px;
+  margin-bottom: 4px;
+  color: rgba(0,0,0,.85);
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 28px;
+}
+.avatar-info{
+  box-sizing: border-box;
+}
+.avatar-info p{
+  position: relative;
+  margin-bottom: 8px;
+  padding-left: 26px;
+}
+.avatar-info i{
+  position: absolute;
+  top: 0px;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+}
+.tags-title{
+  margin-bottom: 12px;
+    color: rgba(0,0,0,.85);
+    font-weight: 500;
+}
+.icon-action{
+  color: #1890ff;
+  cursor:pointer;
+}
+.blacklist-btn{
+  margin-bottom: 20px;
 }
