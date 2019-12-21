@@ -1,20 +1,84 @@
 import React from 'react';
+import { connect } from 'dva';
 import styles from './Personal.css';
-import { Upload, Card, Row, Col, Button, Icon, Typography, Divider, Table, Tabs, message } from 'antd';
+import { Upload, Card, Row, Col, Button, Icon, Typography, Divider, Table, Tabs, message, Progress, Modal, Input, Skeleton, List,Avatar } from 'antd';
 import PanThumb from '../../components/PanThumb/PanThumb'
 import MyTags from '../../components/MyTags/MyTags'
+import ModifyPassword from './ModifyPassword'
 const { Paragraph } = Typography;
 const { TabPane } = Tabs;
-const imgTypeList = ['image/jpeg','image/jpg','image/png','image/gif','image/bmp']
+const imgTypeList = ['image/jpeg','image/jpg','image/png','image/gif','image/bmp'];
+const teamList=[{
+    img:'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+    name:'团队一'
+  },{
+    img:'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+    name:'团队二'
+  },{
+    img:'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+    name:'团队三'
+  },{
+    img:'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+    name:'团队四'
+  }];
+@connect(state=>({
+  blackList:state.appBlackList.blackListInfo
+}),{
+  getBlackListFn: () => ({
+    type: "appBlackList/getBlackListFn"
+  }),
+  addBlackListInfoFn: (ip,loation) =>({
+    type: "appBlackList/addBlackListInfoFn",ip,loation
+  }),
+  delBlackListInfoFn: ip =>({
+    type: "appBlackList/delBlackListInfoFn",ip
+  })
+})
 class Personal extends React.Component{
   state = {
     autograph:'个性签名',//签名
-    tags: ['Tag 1', 'Tag 2', 'Tag 3'],
-    tagInputVisible: false,
-    tagValue: '',
+    tags: ['Tag 1', 'Tag 2', 'Tag 3'],//tags值
+    tagInputVisible: false,//tags输入框状态
+    tagValue: '',//输入的tags值
     loading:false,
-    fileList:[]
+    fileList:[],//upload filelist
+    percent:0,//upload进度
+    modelVisible:false,//黑名单模态框
+    ModifyPasswordVisible:false,//密码模态框
+    tagsVisible:false,//标签模态框
+    codeVisible:false,//注册码
+    mycode:''
   };
+  settingList = [{
+    title:'修改密码',
+    description:'对密码进行修改',
+    active:[<a href="a" onClick={e=>{    
+      e.preventDefault();
+      this.setState({
+        ModifyPasswordVisible:true
+      })}} 
+    key="password-edit">修改</a>]
+  },{
+    title:'文章标签管理',
+    description:'文章标签最多8个',
+    active:[<a href="b" onClick={e=>{    
+      e.preventDefault();
+      this.setState({
+        tagsVisible:true
+      })}}  key="article-tags">管理</a>]
+  },{
+    title:'注册码生成',
+    description:'生成系统注册码',
+    active:[<a href="c" onClick={e=>{    
+      e.preventDefault();
+      this.generateCode();
+      this.setState({
+        codeVisible:true
+      })}}  key="article-tags">生成</a>]
+  }]
+  componentDidMount(){
+    this.props.getBlackListFn();
+  }
   //签名fn
   autographChange = text =>{
     this.setState({
@@ -68,48 +132,38 @@ class Personal extends React.Component{
   uploadChange = info => {
     const { status } = info.file;
     if (status !== 'uploading') {
-      console.log(info.file, info.fileList);
+      console.log(info.file.percent);
     }
     if (status === 'done') {
       message.success(`头像上传成功`);
       this.setState({
-        loading:false
+        loading:false,
+        fileList:[]
       })
+      return ;
     } else if (status === 'error') {
       message.error(`头像上传失败`);
       this.setState({
         loading:false
       })
+      return ;
     } else if(status === 'uploading'){
       this.setState({
         loading:true
       })
     }
     this.setState({
-        fileList:[]
+      fileList:info.fileList,
+      percent:parseInt(info.file.percent.toFixed(0))
+    })
+  }
+  //code
+  generateCode = () =>{
+    this.setState({
+      mycode:'123'
     })
   }
   //table
-  dataSource = [
-    {
-      key: '1',
-      ip: '胡彦斌',
-      location: 32
-    },
-    {
-      key: '2',
-      ip: '胡彦斌',
-      location: 32
-    },{
-      key: '3',
-      ip: '胡彦斌',
-      location: 32
-    },{
-      key: '4',
-      ip: '胡彦斌',
-      location: 32
-    },
-  ];
   pagination={
     showSizeChanger:true,
     pageSizeOptions:['10','25','50'],
@@ -131,14 +185,16 @@ class Personal extends React.Component{
       key: 'action',
       render: (text, record) => (
         <span>
-          <span className={styles['icon-action']}  onClick={()=>{}}>
+          <span className={styles['icon-action']}  onClick={()=>{this.props.delBlackListInfoFn(record.ip)}}>
             <i className="iconfont icon-blacklist"></i>&nbsp;取消拉黑
           </span>
         </span>
       )
     }];
+  
   render(){
-    const { tags, tagInputVisible, tagValue, autograph, loading } = this.state;
+    const { tags, tagInputVisible, tagValue, autograph, loading, percent,modelVisible, ModifyPasswordVisible,tagsVisible,codeVisible,mycode } = this.state;
+    const { blackList } = this.props;
       return (
         <div>
           <Row gutter={[16,30]}>
@@ -153,19 +209,21 @@ class Personal extends React.Component{
                       zIndex='1' 
                       imgUrl='https://wpimg.wallstcn.com/577965b9-bb9e-4e02-9f0c-095b41417191'
                       >
-                      <div className={styles['avatar-upload']}>
-                       { !loading?<Upload 
+                      <div id="personal-upload" className={styles['avatar-upload']}>
+                        <Upload 
                           name='file'
-                          multiple={false}
+                          disabled={loading}
                           action = 'https://www.mocky.io/v2/5cc8019d300000980a055e76'
                           accept=".png,.jpg,.jpeg,.bmp,.gif"
                           fileList={this.state.fileList}
                           beforeUpload={this.beforeUpload}
                           onChange={this.uploadChange}
                         >
-                          <Icon type="edit" />
-                          <div>上传头像</div>
-                        </Upload>:<div><Icon type="loading" />上传中</div>}
+                          {!loading?<div>
+                            <Icon type="edit" />
+                            <div>上传头像</div>
+                          </div>:<div><Progress type="circle" width={60} percent={percent} format={percent => percent===100?<Icon type="check"></Icon>:`${percent}%`} /></div>}
+                        </Upload>
                       </div>
                     </PanThumb>
                   </div>
@@ -183,34 +241,46 @@ class Personal extends React.Component{
                     <p><i className="iconfont icon-location2"></i>中国 上海市</p>
                   </div>
                   <Divider dashed={true} />
-                  <div className={styles['tags-title']}>标签</div>
-                  <MyTags
-                     tags={tags}
-                     tagInputVisible={tagInputVisible}
-                     tagValue={tagValue}
-                     removeTag={this.removeTag}
-                     showTagInput={this.showTagInput}
-                     tagInputChange={this.tagInputChange}
-                     tagInputConfirm={this.tagInputConfirm}
-                     tagSaveInputRef={this.tagSaveInputRef}
-                  ></MyTags>
+                  <div className={styles['team-title']}>团队</div>
+                  <Row gutter="16">
+                    {
+                      teamList.map(item=>(
+                        <Col span={12}>
+                          <span class={styles['team-text']} style={{padding:'5px 0'}}>
+                            <Avatar size="small" style={{'marginRight':'5px'}}src={item.img} />
+                            <span>{item.name}</span>
+                          </span>
+                        </Col>
+                      ))
+                    }
+                  </Row>
               </Card>
             </Col>
             <Col span={16}>
               <Card className={styles['panel-body']}>
               <Tabs defaultActiveKey="1">
-                <TabPane tab="系统设置" key="1">
-                 修改密码-旧密码 新密码 确认新密码
-                 文章数量
-                 文章标签管理
-                 注册码生成
+                <TabPane  id="personal-list" tab="系统设置" key="1">
+                 <List
+                   
+                    itemLayout="horizontal"
+                    dataSource={this.settingList}
+                    renderItem={item => (
+                      <List.Item actions={item.active}>
+                        <List.Item.Meta
+                          title={item.title}
+                          description={item.description}
+                        />
+                      </List.Item>
+                    )}
+                  />
+
                 </TabPane>
                 <TabPane tab="黑名单" key="2">
-                  <Button className={styles['blacklist-btn']}><Icon type="plus"></Icon>新增</Button>
+                  <Button onClick={()=>{this.setState({modelVisible:true})}} className={styles['blacklist-btn']}><Icon type="plus"></Icon>新增</Button>
                   <Table 
                     loading={false}
                     columns={this.columns} 
-                    dataSource={this.dataSource} 
+                    dataSource={blackList.map(item=>({...item,key:item.id}))} 
                     pagination={this.pagination}
                   />
                 </TabPane>
@@ -218,6 +288,57 @@ class Personal extends React.Component{
               </Card>
             </Col>
           </Row>
+            <Modal
+              title="添加黑名单IP"
+              visible={modelVisible}
+              destroyOnClose={true}
+              onOk={this.addBlackInfo}
+              onCancel={()=>{this.setState({modelVisible:false})}}
+              okText='添加'
+            >
+            <Input placeholder="请输入ip地址"/>
+          </Modal>
+          <Modal
+            title="修改密码"
+            visible={ModifyPasswordVisible}
+            destroyOnClose={true}
+            onOk={this.addBlackInfo}
+            onCancel={()=>{this.setState({ModifyPasswordVisible:false})}}
+            okText='确定'
+            cancelText="取消"
+          >
+              <ModifyPassword></ModifyPassword>
+          </Modal>
+          <Modal
+            title="文章标签管理"
+            visible={tagsVisible}
+            destroyOnClose={true}
+            onOk={this.submitTags}
+            onCancel={()=>{this.setState({tagsVisible:false})}}
+            okText='确定'
+            cancelText="取消"
+          >
+            <MyTags
+                tags={tags}
+                tagInputVisible={tagInputVisible}
+                tagValue={tagValue}
+                removeTag={this.removeTag}
+                showTagInput={this.showTagInput}
+                tagInputChange={this.tagInputChange}
+                tagInputConfirm={this.tagInputConfirm}
+                tagSaveInputRef={this.tagSaveInputRef}
+                limit={8}
+            ></MyTags>
+          </Modal>
+          <Modal
+            title="注册码"
+            visible={codeVisible}
+            destroyOnClose={true}
+            onOk={()=>{this.setState({codeVisible:false})}}
+            okText='确定'
+          >
+            <span>{mycode}<Icon type="pic-right" /></span>
+          </Modal>
         </div>
       );
   }

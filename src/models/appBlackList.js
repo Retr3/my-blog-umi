@@ -7,8 +7,8 @@ function getBlackList(){
     });
 }
 //添加黑名单
-function addBlackListInfo(ip){
-    return axios.post("/api/addBlackListInfo",{ip}).then(res=>{
+function addBlackListInfo(ip,location){
+    return axios.post("/api/addBlackListInfo",{ip,location}).then(res=>{
         return {code:res.data.code};
     });
 }
@@ -38,9 +38,9 @@ export default {
                 message.error(`黑名单初始化失败`);
             }
         },
-        *addBlackListInfoFn({ip},{call,put}){
+        *addBlackListInfoFn({ip,location},{call,put}){
             try{
-                const { code } = yield call(addBlackListInfo,ip);
+                const { code } = yield call(addBlackListInfo,ip,location);
                 if(code === 0){
                     notification.success({message: '黑名单添加成功',duration:1});
                     yield put({ type: "getBlackListFn"});

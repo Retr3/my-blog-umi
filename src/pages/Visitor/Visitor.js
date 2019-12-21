@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'dva';
 import { Tabs, Icon, Table, BackTop, Statistic, Row, Col, Card, Button } from 'antd';
 import styles from './Visitor.css';
-const { Column, ColumnGroup } = Table;
 const { TabPane } = Tabs;
 const displayClick ={
   color:'#333333',
@@ -28,8 +27,8 @@ const displayClick ={
   getBlackListFn: () => ({
     type: "appBlackList/getBlackListFn"
   }),
-  addBlackListInfoFn: ip =>({
-    type: "appBlackList/addBlackListInfoFn",ip
+  addBlackListInfoFn: (ip,location) =>({
+    type: "appBlackList/addBlackListInfoFn",ip,location
   }),
   delBlackListInfoFn: ip =>({
     type: "appBlackList/delBlackListInfoFn",ip
@@ -66,7 +65,7 @@ class Visitor extends React.Component{
           <span style={this.state.loading?displayClick:{}} className={styles['icon-action']}  onClick={()=>this.state.loading?"":this.delBlackList(record.ip)}>
             <i className="iconfont icon-blacklist"></i>&nbsp;取消拉黑
           </span>:
-          <span style={this.state.loading?displayClick:{}} className={styles['icon-action']}  onClick={()=>this.state.loading?'':this.addBlackList(record.ip)}>
+          <span style={this.state.loading?displayClick:{}} className={styles['icon-action']}  onClick={()=>this.state.loading?'':this.addBlackList(record.ip,record.location)}>
             <i className="iconfont icon-blacklist"></i>&nbsp;加入黑名单
           </span>}
         </span>
@@ -142,11 +141,11 @@ class Visitor extends React.Component{
       loading:false
     })
   }
-  addBlackList = async key => {
+  addBlackList = async (key,location) => {
     this.setState({
       loading:true
     })
-    await this.props.addBlackListInfoFn(key);
+    await this.props.addBlackListInfoFn(key,location);
     this.setState({
       loading:false
     })
@@ -183,7 +182,7 @@ class Visitor extends React.Component{
                     loading={false}
                     columns={this.columns} 
                     dataSource={showVisitorInfo?showVisitorInfo.map(item=>{
-                      let blackFlag = !!blackList.find(value=>value===item.ip)
+                      let blackFlag = !!blackList.find(value=>value.ip===item.ip)
                       return {...item,blackFlag}
                     }):[]} 
                     pagination={this.pagination}
@@ -197,7 +196,7 @@ class Visitor extends React.Component{
                     
                     columns={this.loginColumns} 
                     dataSource={loginVisitorInfo?loginVisitorInfo.map(item=>{
-                      let blackFlag = !!blackList.find(value=>value===item.ip)
+                      let blackFlag = !!blackList.find(value=>value.ip===item.ip)
                       return {...item,blackFlag}
                     }):[]} 
                     pagination={this.pagination}

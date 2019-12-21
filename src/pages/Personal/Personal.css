@@ -1,10 +1,10 @@
 
 .panel-body{
-  min-height:500px;
+  min-height:584px;
 }
 .avatar-head{
   position: absolute!important;
-  top: 30%;
+  top: 24%;
   left: 34%;
   border: 5px solid #fff;
   background-color: #fff;
@@ -50,10 +50,20 @@
   height: 14px;
   font-size: 14px;
 }
-.tags-title{
+.team-title{
   margin-bottom: 12px;
-    color: rgba(0,0,0,.85);
-    font-weight: 500;
+  color: rgba(0,0,0,.85);
+  font-weight: 500;
+}
+.team-text{
+  display: block;
+  margin-bottom: 10px;
+  overflow: hidden;
+  color: rgba(0,0,0,.65);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  transition: color .3s;
 }
 .icon-action{
   color: #1890ff;

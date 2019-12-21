@@ -1,11 +1,12 @@
 import { Input, Tag, Icon } from 'antd';
 import { TweenOneGroup } from 'rc-tween-one';
 
-export default function MyTags({tags,tagInputVisible,tagValue,removeTag,showTagInput,tagInputChange,tagInputConfirm,tagSaveInputRef}){
+export default function MyTags({tags,tagInputVisible,tagValue,removeTag,showTagInput,tagInputChange,tagInputConfirm,tagSaveInputRef,limit}){
     const forMap = tag => {
         const tagElem = (
           <Tag
             closable
+            style={{'margin':'5px 5px'}}
             onClose={e => {
               e.preventDefault();
               removeTag(tag);
@@ -39,24 +40,27 @@ export default function MyTags({tags,tagInputVisible,tagValue,removeTag,showTagI
                 {tags.map(forMap)}
                 </TweenOneGroup>
             </div>
-            {tagInputVisible && (
-                <Input
-                ref={tagSaveInputRef}
-                type="text"
-                maxLength={5}
-                size="small"
-                style={{ width: 78 }}
-                value={tagValue}
-                onChange={tagInputChange}
-                onBlur={tagInputConfirm}
-                onPressEnter={tagInputConfirm}
-                />
-            )}
-            {!tagInputVisible && (
-                <Tag onClick={showTagInput} style={{ background: '#fff', borderStyle: 'dashed' }}>
-                    <Icon type="plus" />
-                </Tag>
-            )}
+            {tags.length<limit?<div>
+              {tagInputVisible && (
+                  <Input
+                  ref={tagSaveInputRef}
+                  type="text"
+                  maxLength={5}
+                  size="small"
+                  style={{ width: 78 }}
+                  value={tagValue}
+                  onChange={tagInputChange}
+                  onBlur={tagInputConfirm}
+                  onPressEnter={tagInputConfirm}
+                  />
+              )}
+              {!tagInputVisible && (
+                  <Tag onClick={showTagInput} style={{ background: '#fff', borderStyle: 'dashed', marginLeft:'5px' }}>
+                      <Icon type="plus" />
+                  </Tag>
+              )}
+            </div>:''}
+
         </div>
     )
 }
