@@ -12,6 +12,11 @@ export default {
           default: 'zh-CN',
           baseNavigator: true,
         },
+        dynamicImport: {
+          loadingComponent: './components/Loadable.js',
+          webpackChunkName: true,
+          level: 2,
+        },
       },
     ],
   ],

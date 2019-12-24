@@ -1,4 +1,35 @@
-
-.normal {
-  background: #8FF279;
+.content_404{
+  width:100%;
+  height:100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column;
+}
+.content_404 h1{
+  width:420px;
+  height:193px;
+}
+.content_404 h1 img{
+  width:100%;
+  height:100%;
+}
+.tip{
+  margin-top:10px;
+  width:100%;
+  height:30px;
+  font-size:16px;
+  font-family:"Microsoft Yahei","Hiragino Sans GB","STHeiti";
+  color:#888;
+  text-align:center
+}
+.explain{
+  margin:15px 0;
+  width:100%;
+  height:30px;
+  font-weight: 700;
+  font-size:26px;
+  font-family:"Microsoft Yahei","Hiragino Sans GB","STHeiti";
+  color:#888;
+  text-align:center
 }
