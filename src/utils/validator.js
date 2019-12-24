@@ -35,4 +35,8 @@
         const reg = /[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘'，。、]/im;
         return reg.test(symbol)
     }
-  
+    //ip地址
+    export function isIp(symbol) {
+        const reg = /^((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$/;
+        return reg.test(symbol)
+    }

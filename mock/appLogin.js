@@ -6,9 +6,9 @@ export default {
         return res.json({
           code: 0,
           data: {
-            token: "kaikebaisgood",
+            token: "istoken",
             role: "admin",
-            username: "kaikeba"
+            username: "zxy"
           },
           msg:'ok'
         });

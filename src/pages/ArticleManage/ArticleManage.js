@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import styles from './ArticleManage.css';
-import AddorUpdateArticle from './AddorUpdateArticle'
+import AddorUpdateArticle from './AddorUpdateArticle';
 import {Icon, Button, Input, Row, Col, Card, Modal, Tooltip, Tag } from 'antd';
 const { Meta } = Card;
 const { confirm } = Modal;

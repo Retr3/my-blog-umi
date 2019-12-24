@@ -1,10 +1,12 @@
 import React from 'react';
 import { connect } from 'dva';
 import styles from './Personal.css';
-import { Upload, Card, Row, Col, Button, Icon, Typography, Divider, Table, Tabs, message, Progress, Modal, Input, Skeleton, List,Avatar } from 'antd';
+import { Upload, Card, Row, Col, Button, Icon, Typography, Divider, Table, Tabs, message, Progress, Modal, Input, Skeleton, List, Avatar,Tooltip, Form } from 'antd';
 import PanThumb from '../../components/PanThumb/PanThumb'
 import MyTags from '../../components/MyTags/MyTags'
-import ModifyPassword from './ModifyPassword'
+import ModifyPassword from '../../components/ModifyPassword/ModifyPassword'
+import { isIp } from '../../utils/validator'
+import copy from 'copy-to-clipboard';
 const { Paragraph } = Typography;
 const { TabPane } = Tabs;
 const imgTypeList = ['image/jpeg','image/jpg','image/png','image/gif','image/bmp'];
@@ -22,7 +24,9 @@ const teamList=[{
     name:'团队四'
   }];
 @connect(state=>({
-  blackList:state.appBlackList.blackListInfo
+  blackList:state.appBlackList.blackListInfo,
+  tagsInfo:state.appTags.tags,
+  registerCode:state.appRegisterCode.registerCode
 }),{
   getBlackListFn: () => ({
     type: "appBlackList/getBlackListFn"
@@ -32,12 +36,21 @@ const teamList=[{
   }),
   delBlackListInfoFn: ip =>({
     type: "appBlackList/delBlackListInfoFn",ip
+  }),
+  getTagsFn:() =>({
+    type: "appTags/getTagsFn"
+  }),
+  updateTagsFn:tags =>({
+    type: "appTags/updateTagsFn",tags
+  }),
+  getRegisterCodeFn:() =>({
+    type: "appRegisterCode/getRegisterCodeFn"
   })
 })
 class Personal extends React.Component{
   state = {
     autograph:'个性签名',//签名
-    tags: ['Tag 1', 'Tag 2', 'Tag 3'],//tags值
+    tags: [],//tags值
     tagInputVisible: false,//tags输入框状态
     tagValue: '',//输入的tags值
     loading:false,
@@ -46,35 +59,32 @@ class Personal extends React.Component{
     modelVisible:false,//黑名单模态框
     ModifyPasswordVisible:false,//密码模态框
     tagsVisible:false,//标签模态框
-    codeVisible:false,//注册码
-    mycode:''
+    blackIp:'',
+    ipValidateStatus:'',
+    ipHelp:''
   };
   settingList = [{
     title:'修改密码',
     description:'对密码进行修改',
     active:[<a href="a" onClick={e=>{    
       e.preventDefault();
-      this.setState({
-        ModifyPasswordVisible:true
-      })}} 
+      this.repasswordModel(true);
+    }} 
     key="password-edit">修改</a>]
   },{
     title:'文章标签管理',
     description:'文章标签最多8个',
     active:[<a href="b" onClick={e=>{    
       e.preventDefault();
-      this.setState({
-        tagsVisible:true
-      })}}  key="article-tags">管理</a>]
+      this.showTagsModel();
+      }}  key="article-tags">管理</a>]
   },{
     title:'注册码生成',
     description:'生成系统注册码',
     active:[<a href="c" onClick={e=>{    
       e.preventDefault();
       this.generateCode();
-      this.setState({
-        codeVisible:true
-      })}}  key="article-tags">生成</a>]
+      }}  key="article-tags">生成</a>]
   }]
   componentDidMount(){
     this.props.getBlackListFn();
@@ -115,6 +125,22 @@ class Personal extends React.Component{
   };
 
   tagSaveInputRef = input => (this.input = input);
+  
+  showTagsModel = async () =>{
+    await this.props.getTagsFn();
+    this.setState({
+      tags:this.props.tagsInfo,
+      tagsVisible:true
+    })
+  }
+  //标签提交
+  submitTags = async () => {
+    //this.state.tags
+    await this.props.updateTagsFn(this.state.tags);
+    this.setState({
+      tagsVisible:false
+    })
+  }
   //upload
   beforeUpload = file =>{
     const isImg = !!(imgTypeList.indexOf(file.type)>-1);
@@ -157,11 +183,24 @@ class Personal extends React.Component{
       percent:parseInt(info.file.percent.toFixed(0))
     })
   }
+
   //code
-  generateCode = () =>{
-    this.setState({
-      mycode:'123'
-    })
+  generateCode = async () => {
+    //生成注册码方法
+    await this.props.getRegisterCodeFn();
+    let code = this.props.registerCode;
+    if(code){
+      Modal.success({
+        title: '注册码生成成功',
+        okText:'确定',
+        content: <Tooltip title="点击复制"><div className={styles['code-model']} onClick={()=>this.copyCode(code)}>{code}</div></Tooltip>
+      });
+    }
+  }
+  //copyCode
+  copyCode = (code) =>{
+    copy(code);
+    message.success('复制成功');
   }
   //table
   pagination={
@@ -191,9 +230,61 @@ class Personal extends React.Component{
         </span>
       )
     }];
-  
+  //resetpassword
+  submitRePassword = () =>{
+    this.child.submitRePassword()
+  }
+  repasswordModel = visible =>{
+    this.setState({
+      ModifyPasswordVisible:visible
+    })
+  }
+  onRef = (ref) => {
+    this.child = ref
+  }
+  //confirmip
+  confirmBlackIp = e =>{
+    let { value } = e.target;
+    this.setState({
+      blackIp:value
+    })
+    this.confirmIp(value);
+  }
+  addBlackInfo = () =>{
+    let { blackIp } = this.state;
+    const { addBlackListInfoFn } = this.props;
+    let flag = this.confirmIp(blackIp);
+    if(flag){
+      addBlackListInfoFn(blackIp,'');
+      this.setState({modelVisible:false,ipHelp:'',ipValidateStatus:''})
+    }
+  }
+  confirmIp = value =>{
+    const { blackList } = this.props;
+      if(value && isIp(value)){
+        if(blackList.findIndex(item=>item.ip === value)<0){
+          this.setState({
+            ipValidateStatus:'success',
+            ipHelp:''
+          })
+          return true
+        }else{
+          this.setState({
+            ipValidateStatus:'error',
+            ipHelp:'该ip已经存在于黑名单'
+          })
+          return false;
+        }
+      }else{
+        this.setState({
+          ipValidateStatus:'error',
+          ipHelp:'请输入正确的ip格式'
+        })
+        return false;
+      }
+  }
   render(){
-    const { tags, tagInputVisible, tagValue, autograph, loading, percent,modelVisible, ModifyPasswordVisible,tagsVisible,codeVisible,mycode } = this.state;
+    const { tags, tagInputVisible, tagValue, autograph, loading, percent,modelVisible, ModifyPasswordVisible, tagsVisible, ipValidateStatus, ipHelp } = this.state;
     const { blackList } = this.props;
       return (
         <div>
@@ -242,11 +333,11 @@ class Personal extends React.Component{
                   </div>
                   <Divider dashed={true} />
                   <div className={styles['team-title']}>团队</div>
-                  <Row gutter="16">
+                  <Row gutter={16}>
                     {
                       teamList.map(item=>(
-                        <Col span={12}>
-                          <span class={styles['team-text']} style={{padding:'5px 0'}}>
+                        <Col span={12} key={item.name}>
+                          <span className={styles['team-text']} style={{padding:'5px 0'}}>
                             <Avatar size="small" style={{'marginRight':'5px'}}src={item.img} />
                             <span>{item.name}</span>
                           </span>
@@ -260,8 +351,7 @@ class Personal extends React.Component{
               <Card className={styles['panel-body']}>
               <Tabs defaultActiveKey="1">
                 <TabPane  id="personal-list" tab="系统设置" key="1">
-                 <List
-                   
+                 <List 
                     itemLayout="horizontal"
                     dataSource={this.settingList}
                     renderItem={item => (
@@ -293,21 +383,29 @@ class Personal extends React.Component{
               visible={modelVisible}
               destroyOnClose={true}
               onOk={this.addBlackInfo}
-              onCancel={()=>{this.setState({modelVisible:false})}}
+              onCancel={()=>{this.setState({modelVisible:false,ipHelp:'',ipValidateStatus:''})}}
               okText='添加'
             >
-            <Input placeholder="请输入ip地址"/>
+              <Form.Item
+                validateStatus={ipValidateStatus}
+                hasFeedback
+                help={ipHelp}
+              >
+                <Input placeholder="请输入ip地址" onChange={e=>this.confirmBlackIp(e)}/>
+              </Form.Item>
+              
+
           </Modal>
           <Modal
             title="修改密码"
             visible={ModifyPasswordVisible}
             destroyOnClose={true}
-            onOk={this.addBlackInfo}
-            onCancel={()=>{this.setState({ModifyPasswordVisible:false})}}
+            onOk={this.submitRePassword}
+            onCancel={()=>{this.repasswordModel(false)}}
             okText='确定'
             cancelText="取消"
           >
-              <ModifyPassword></ModifyPassword>
+              <ModifyPassword onRef={this.onRef} repasswordModel={this.repasswordModel}></ModifyPassword>
           </Modal>
           <Modal
             title="文章标签管理"
@@ -329,15 +427,6 @@ class Personal extends React.Component{
                 tagSaveInputRef={this.tagSaveInputRef}
                 limit={8}
             ></MyTags>
-          </Modal>
-          <Modal
-            title="注册码"
-            visible={codeVisible}
-            destroyOnClose={true}
-            onOk={()=>{this.setState({codeVisible:false})}}
-            okText='确定'
-          >
-            <span>{mycode}<Icon type="pic-right" /></span>
           </Modal>
         </div>
       );

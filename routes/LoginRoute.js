@@ -5,7 +5,7 @@ export default connect(state=>({isLogin: !!state.appLogin.token}))(props => {
     //(也可以创建一个公共store在进入每页时将store赋值为当前路径，这样访问登录页时会回跳当前页)
     if (props.isLogin) {
             return <Redirect to={{
-                pathname:'/index'
+                pathname:'/home'
             }} />;
     }
     return (

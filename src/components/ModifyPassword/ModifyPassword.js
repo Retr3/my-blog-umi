@@ -1,31 +1,68 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Form, Input, Tooltip, Icon, Cascader, Row, Col, AutoComplete } from 'antd';
-@connect()
+import { Form, Input } from 'antd';
+@connect(state=>({
+    errorFlag:state.appRePassword.errorFlag
+  }),{
+    rePasswordFn: payload => ({
+        type: "appRePassword/rePasswordFn",payload
+    }),
+  })
 @Form.create()
 class ModifyPassword extends React.Component{
     state={
-        confirmDirty: false
+        confirmDirty: false,
+        oldDirty:false
+    }
+    componentDidMount(){
+        this.props.onRef(this);
+    }
+    //修改密码提交
+    submitRePassword =  () =>{
+        let {rePasswordFn,repasswordModel,form} = this.props;
+        form.validateFields(async(err, values) => {
+            if (!err) {
+                console.log('Received values of form: ', values);
+                let {oldpassword,newpassword} = values;
+                await rePasswordFn({payload:{oldpassword,newpassword}});
+                repasswordModel(!!(this.props.errorFlag<0))
+            }
+        });
     }
     handleConfirmBlur = e => {
         const { value } = e.target;
         this.setState({ confirmDirty: this.state.confirmDirty || !!value });
     };
+    handleOldBlur = e => {
+        const { value } = e.target;
+        this.setState({ oldDirty: this.state.oldDirty || !!value });
+    }
     //
     validateToNextPassword = (rule, value, callback) => {
         const { form } = this.props;
+        if (value && this.state.oldDirty) {
+            form.validateFields(['oldpassword'], { force: true });
+        }
         if (value && this.state.confirmDirty) {
           form.validateFields(['confirm'], { force: true });
         }
         callback();
       };
     compareToFirstPassword = (rule, value, callback) => {
-    const { form } = this.props;
-    if (value && value !== form.getFieldValue('newpassword')) {
-        callback('两次密码不同');
-    } else {
-        callback();
-    }
+        const { form } = this.props;
+        if (value && value !== form.getFieldValue('newpassword')) {
+            callback('两次密码不同');
+        } else {
+            callback();
+        }
+    };
+    compareNewPassword =  (rule, value, callback) => {
+        const { form } = this.props;
+        if (value && value === form.getFieldValue('newpassword')) {
+            callback('新密码与旧密码相同');
+        } else {
+            callback();
+        }
     };
     render(){
         const { getFieldDecorator } = this.props.form;
@@ -48,10 +85,10 @@ class ModifyPassword extends React.Component{
                         message: '请输入旧密码',
                     },
                     {
-                        validator: this.validateToNextPassword,
+                        validator: this.compareNewPassword,
                     },
                     ],
-                })(<Input.Password />)}
+                })(<Input.Password onBlur={this.handleOldBlur}/>)}
                 </Form.Item>
                 <Form.Item label="新密码" hasFeedback>
                     {getFieldDecorator('newpassword', {

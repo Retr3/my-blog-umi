@@ -8,18 +8,18 @@ export default {
         antd: true,
         dva: true,
         locale: {
-          enable: true, 
+          enable: true,
           default: 'zh-CN',
-          baseNavigator: true
-        }
+          baseNavigator: true,
+        },
       },
-    ]
+    ],
   ],
   routes: [
     {
       path: '/login',
       component: './Login',
-      Routes: ['./routes/LoginRoute.js']
+      Routes: ['./routes/LoginRoute.js'],
     },
     {
       path: '/',
@@ -29,7 +29,7 @@ export default {
       routes: [
         {
           path: '/',
-          redirect:'/home'
+          redirect: '/home',
         },
         {
           path: '/home',
@@ -41,28 +41,28 @@ export default {
         },
         {
           path: '/resume',
-          redirect: '/resume/online'
+          redirect: '/resume/online',
         },
         {
-          path:'/resume/online',
-          component: '././Resume/ResumeOnline'
+          path: '/resume/online',
+          component: '././Resume/ResumeOnline',
         },
         {
-          path:'/resume/upload',
-          component: '././Resume/ResumeUpload'
+          path: '/resume/upload',
+          component: '././Resume/ResumeUpload',
         },
         {
           path: '/visitor',
-          component: './Visitor/Visitor'
+          component: './Visitor/Visitor',
         },
         {
           path: '/personal',
-          component: './Personal/Personal'
+          component: './Personal/Personal',
         },
         {
           component: './NotFound',
-        }
-      ]
+        },
+      ],
     },
   ],
 };

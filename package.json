@@ -15,14 +15,17 @@
     "bizcharts": "^3.5.6",
     "braft-editor": "^2.3.8",
     "braft-extensions": "^0.0.20",
+    "copy-to-clipboard": "^3.2.0",
     "draft-js-prism": "^1.0.6",
     "dva": "^2.6.0-beta.6",
     "html-table-to-json": "^0.4.1",
+    "nprogress": "^0.2.0",
     "prismjs": "^1.17.1",
     "rc-tween-one": "^2.6.8",
     "react": "^16.8.6",
     "react-color": "^2.17.3",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "react-loadable": "^5.5.0"
   },
   "devDependencies": {
     "babel-eslint": "^9.0.0",
