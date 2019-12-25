@@ -4,7 +4,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
 class LoadingPage extends React.Component {
-  //类似github页面加载∂的那个加载条
+  //顶部加载条，页面加载时触发
   componentDidMount(){
     NProgress.start()
   }

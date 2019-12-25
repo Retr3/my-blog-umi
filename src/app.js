@@ -6,3 +6,7 @@ export const dva = {
     },
   },
 };
+// //路由变化时触发
+// export function onRouteChange({ location, routes, action }) {
+//   return <PrivateRoute/>
+// }

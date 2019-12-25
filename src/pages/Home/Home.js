@@ -3,7 +3,7 @@ import styles from './Home.css';
 import { connect } from 'dva';
 import { useEffect } from "react";
 import { Chart, Axis, Geom, Tooltip, Legend } from 'bizcharts';
-import  Piepercent  from "../../components/PiePercent";
+import  Piepercent  from "../../components/Charts/PiePercent";
 
 export default connect(state=>({
     staticInfo:state.appHome.staticList,
@@ -35,11 +35,11 @@ export default connect(state=>({
             getActionInfo();
             getAbilityInfo();
             getRecordInfo();
-          },[]);
+          },[getAbilityInfo, getActionInfo, getRecordInfo, getStaticInfo]);
       return (
         <div >
             <Row gutter={[16,16]}>
-                {staticInfo?staticInfo.map((item,index)=>{
+                {staticInfo.length>0?staticInfo.map((item,index)=>{
                     return <Col key={item} xl={{span:6}} md={{span:12}} xs={{span:12}}>
                                 <Card 
                                     bordered={false}

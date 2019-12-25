@@ -31,7 +31,7 @@ const menus = [
   {
     title:'画廊',
     icon: 'picture',
-    key: '/pic'
+    key: '/gallery'
   },
   {
     title:'个人中心',

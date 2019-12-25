@@ -61,6 +61,10 @@ export default {
           component: './Visitor/Visitor',
         },
         {
+          path: '/gallery',
+          component: './ImageGallery/ImageGallery',
+        },
+        {
           path: '/personal',
           component: './Personal/Personal',
         },
