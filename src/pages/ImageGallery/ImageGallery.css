@@ -1,3 +1,10 @@
-.test{
-    color:green;
-}
+.itemOneCol{
+    width:25%;
+    margin-bottom:8px;
+    padding:0 4px;
+  }
+  .itemTwoCol{
+    width:50%;
+    margin-bottom:8px;
+    padding:0 4px;
+  }

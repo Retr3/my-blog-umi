@@ -9,18 +9,22 @@
   color: #1890ff;
 }
 .header-ul{
-  display: flex;
-  width: 200px;
+  height: 100%;
+  overflow: hidden;
 }
-.header-ul li {
-  flex-grow: 1;
-  text-align: center;
+.header-ul>span {
+  display: inline-block;
+  height: 100%;
+  padding: 0 12px;
+  cursor: pointer;
+  font-size: 22px;
+  transition: all .3s;
 }
-.header-ul>li img{
+/* .header-ul>li img{
   width: 35px;
   height: 35px;
   border-radius: 100px;
-}
+} */
 .menu{
   line-height: 2em;
   padding: 0 10px;

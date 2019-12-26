@@ -36,3 +36,41 @@ body {
 #personal-list .ant-list-split .ant-list-item:last-child{
   border-bottom: 1px solid #e8e8e8;
 }
+
+.aspect {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%;
+  overflow: hidden;
+  cursor: pointer;
+}
+.aspect--1x2{
+  padding-bottom: calc(112.5% + 8px);
+}
+.aspect--1x1 {
+  padding-bottom: 56.25%;
+  /*padding的百分比是按父级的width计算的*/
+}
+.aspect--2x1 {
+  padding-bottom: 28.125%;
+}
+.aspect__inner{
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.aspect__inner:hover{
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+  -webkit-filter: contrast(130%);
+  filter: contrast(130%);
+  transition: all .2s linear;
+}
+.vertical-center-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
