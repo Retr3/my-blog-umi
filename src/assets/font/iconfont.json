@@ -13,6 +13,13 @@
       "unicode_decimal": 59067
     },
     {
+      "icon_id": "586799",
+      "name": "clear",
+      "font_class": "clear",
+      "unicode": "e6d1",
+      "unicode_decimal": 59089
+    },
+    {
       "icon_id": "810060",
       "name": "时间",
       "font_class": "time",
@@ -81,6 +88,13 @@
       "font_class": "time2",
       "unicode": "e610",
       "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "6626311",
+      "name": "email",
+      "font_class": "email",
+      "unicode": "e635",
+      "unicode_decimal": 58933
     },
     {
       "icon_id": "7285184",

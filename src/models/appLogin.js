@@ -1,5 +1,6 @@
 import axios from "axios";
 import router from "umi/router";
+import { notification } from "antd";
 const userinfo = JSON.parse(localStorage.getItem('userinfo')) || {
     token: "",
     role: "",
@@ -50,12 +51,31 @@ export default {
             }
         } catch (error) {
         }
+      },
+      *logoutFn(obj,{ call, put}){
+        //以后登出可能会与后台有交互？？
+        try{
+          yield put({ type: "logout"});
+          notification.success({message:'注销成功',duration:1});
+          router.push("/login");
+        }catch(err){
+          notification.error({message:'注销失败',duration:1});
+        }
       }
     },
     reducers: {
       init(state, action) {
         // 覆盖旧状态
         return action.payload;
+      },
+      logout(state,actin){
+        localStorage.removeItem('userinfo');
+        return {
+          token: "",
+          role: "",
+          username: "",
+          balance: 0
+        }
       }
     }
   };

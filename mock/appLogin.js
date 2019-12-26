@@ -29,7 +29,6 @@ export default {
       //   code: -1,
       //   msg: "密码错误"
       // });
-    },
-    
+    }
   };
   
