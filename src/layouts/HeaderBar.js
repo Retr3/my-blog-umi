@@ -2,6 +2,7 @@ import React from 'react';
 import screenfull from 'screenfull'
 import { connect } from 'dva';
 import { Layout, Dropdown, Menu, Icon, Badge, Avatar,List } from 'antd';
+import CustomBreadcrumb from '../components/CustomBreadcrumb'
 const { Header } = Layout;
 const noticeData = [{
   icon:'icon-email',
@@ -113,6 +114,11 @@ class HeaderBar extends React.Component {
             type={this.props.collapsed ? 'menu-unfold' : 'menu-fold'}
             onClick={this.props.toggle}
           />
+          <div  className='crumb-ul'>
+            <CustomBreadcrumb />
+          </div>
+            
+          
           <div style={{lineHeight: '64px', float: 'right'}}>
             <div className='header-ul'>
               <span><Icon type={icon} onClick={this.screenfullToggle}/></span>

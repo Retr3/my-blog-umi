@@ -12,6 +12,12 @@
   height: 100%;
   overflow: hidden;
 }
+/*crumb*/
+.crumb-ul{
+  display: inline-block;
+  font-size: 16px;
+  margin-left: 40px;
+}
 .header-ul>span {
   display: inline-block;
   height: 100%;
