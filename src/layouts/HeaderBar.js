@@ -102,7 +102,11 @@ class HeaderBar extends React.Component {
     )
     const login = (
       <Dropdown overlay={userMenu}>
-        {src?<Avatar src={avatar} />:<Avatar style={{ backgroundColor: '#87d068' }} icon="user" />}
+        <span>
+          {src?<Avatar src={avatar} style={{marginRight:'10px'}} />:<Avatar style={{ backgroundColor: '#87d068' , marginRight:'10px'}} icon="user" />}
+          <span style={{fontSize:'18px'}}>{JSON.parse(localStorage.getItem('userinfo')).username}</span>
+        </span>
+
       </Dropdown>)
     const nologin = (
       <Avatar size={64} icon="user"/>

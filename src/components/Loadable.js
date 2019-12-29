@@ -1,5 +1,4 @@
 import React from 'react'
-import dynamic from 'umi/dynamic';
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 

@@ -16,7 +16,6 @@ export default {
     },
     reducers: {
         setCrumbList(state, action) {
-            console.log(action)
             return {crumbList:action.crumbList}
         },
     }

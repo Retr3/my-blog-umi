@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Tabs, Icon, Table, BackTop, Statistic, Row, Col, Card, Button } from 'antd';
+import { Tabs, Icon, Table, BackTop, Statistic, Row, Col, Card } from 'antd';
 import styles from './Visitor.css';
 const { TabPane } = Tabs;
 const displayClick ={

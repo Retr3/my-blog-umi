@@ -4,8 +4,7 @@ import { notification } from "antd";
 const userinfo = JSON.parse(localStorage.getItem('userinfo')) || {
     token: "",
     role: "",
-    username: "",
-    balance: 0
+    username: ""
   };
 // api
 function appLogin(payload) {

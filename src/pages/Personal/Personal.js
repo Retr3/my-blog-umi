@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'dva';
 import styles from './Personal.css';
-import { Upload, Card, Row, Col, Button, Icon, Typography, Divider, Table, Tabs, message, Progress, Modal, Input, Skeleton, List, Avatar,Tooltip, Form } from 'antd';
+import { Upload, Card, Row, Col, Button, Icon, Typography, Divider, Table, Tabs, message, Progress, Modal, Input, List, Avatar,Tooltip, Form, Spin } from 'antd';
 import PanThumb from '../../components/PanThumb/PanThumb'
 import MyTags from '../../components/MyTags/MyTags'
 import ModifyPassword from '../../components/ModifyPassword/ModifyPassword'
 import { isIp } from '../../utils/validator'
+import loadImgAsync from '../../utils/imageLoad'
 import copy from 'copy-to-clipboard';
 const { Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -61,7 +62,8 @@ class Personal extends React.Component{
     tagsVisible:false,//标签模态框
     blackIp:'',
     ipValidateStatus:'',
-    ipHelp:''
+    ipHelp:'',
+    avatarLoad:true
   };
   settingList = [{
     title:'修改密码',
@@ -88,6 +90,13 @@ class Personal extends React.Component{
   }]
   componentDidMount(){
     this.props.getBlackListFn();
+    loadImgAsync('https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png').then(url=>{
+      this.setState({
+        avatarLoad:false
+      })
+    }).catch(err=>{
+      console.log('图片加载失败'+err)
+    })
   }
   //签名fn
   autographChange = text =>{
@@ -284,14 +293,14 @@ class Personal extends React.Component{
       }
   }
   render(){
-    const { tags, tagInputVisible, tagValue, autograph, loading, percent,modelVisible, ModifyPasswordVisible, tagsVisible, ipValidateStatus, ipHelp } = this.state;
+    const { tags, tagInputVisible, tagValue, autograph, loading, percent,modelVisible, ModifyPasswordVisible, tagsVisible, ipValidateStatus, ipHelp, avatarLoad } = this.state;
     const { blackList } = this.props;
       return (
         <div>
           <Row gutter={[16,30]}>
             <Col span={8}>
               <Card  
-                cover={<img style={{maxHeight:'200px'}} alt="example" src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"/>}
+                cover={avatarLoad?<div className={styles['avatar-img']}><Spin /></div>:<img style={{height:'200px'}} alt="example" src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"/>}
                 className={styles['panel-body']}>
                   <div className={styles['avatar-head']}>
                     <PanThumb 

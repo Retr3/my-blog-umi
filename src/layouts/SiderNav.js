@@ -2,6 +2,7 @@ import React from 'react';
 import { Layout, Menu, Icon } from 'antd';
 import Link from "umi/link";
 import styles from './SiderNav.css';
+import logo from '../assets/images/logo.png'
 const { Sider } = Layout;
   //menu方法
 const menus = [
@@ -118,7 +119,13 @@ class SiderNav extends React.Component{
     const {collapsed,selectKeys} = this.props;
     return (
       <Sider style={{minHeight:'100vh',overflow:'auto'}} trigger={null}  collapsible collapsed={collapsed}>
-          <div className={styles.logo} />
+          <div className={styles['logodom']}>
+            <a href="/">
+              <img src={logo} className={styles['logo']}/>
+              <h1 className={styles["sys-title"]}>Blog &nbsp; Management</h1>
+            </a>
+
+          </div>
           <Menu theme="dark" mode="inline"  onOpenChange={this.onOpenChange} openKeys={this.state.openKeys} selectedKeys={selectKeys}>
             {menus.map(item=>{
               return  item.subs && item.subs.length>0?this.renderSubMenu(item):this.renderMenuItem(item)

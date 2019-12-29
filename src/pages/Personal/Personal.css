@@ -2,6 +2,12 @@
 .panel-body{
   min-height:603px;
 }
+.avatar-img{
+  height:200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .avatar-head{
   position: absolute!important;
   top: 24%;

@@ -111,6 +111,13 @@
       "unicode_decimal": 59165
     },
     {
+      "icon_id": "8565894",
+      "name": "独角兽",
+      "font_class": "dujiaoshou",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
       "icon_id": "8576574",
       "name": "cpu",
       "font_class": "cpu",

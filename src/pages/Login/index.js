@@ -2,6 +2,7 @@ import React from 'react';
 import LoginItem from './LoginItem'
 import RegisterForm from './RegisterForm'
 import LoginLoading from '../../components/Loading/LoginLoading'
+import loadImgAsync from '../../utils/imageLoad'
 import { connect } from 'dva';
 @connect(state=>({isLogin: !!state.appLogin.token}))
 class AppLogin extends React.Component {
@@ -11,7 +12,6 @@ class AppLogin extends React.Component {
     loading:false,
   }
   componentDidMount(){
-    console.log(this.props.location.state);
     this.initPage();
   }
   switchShowBox= box =>{
@@ -23,21 +23,13 @@ class AppLogin extends React.Component {
     this.setState({
       loading:true
     })
-    this.loadImgAsync(this.state.url).then(url=>{
+    loadImgAsync(this.state.url).then(url=>{
         this.setState({
           loading:false,
           url
         })
     }).catch(err=>{
       console.log('图片加载失败'+err);
-    })
-  }
-  loadImgAsync = url=>{
-    return new Promise((resolve,reject)=>{
-      const image = new Image();
-      image.onload = () => {resolve(url)};
-      image.onerror = () => {reject()};
-      image.src = url;
     })
   }
   render() {

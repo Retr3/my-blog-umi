@@ -1,6 +1,29 @@
 
+.logodom{
+  position: relative;
+  padding: 0 10px;
+  overflow: hidden;
+  background: #001529;
+  cursor: pointer;
+  transition: all .3s;
+}
+.logodom a{
+  display: flex;
+  align-items: center;
+  height: 64px;
+}
 .logo{
-  height:32px;
-  background: rgba(255, 255, 255, .2);
-  margin: 16px;
+  display: inline-block;
+  height: 18px;
+  vertical-align: middle;
+}
+.sys-title{
+  display: inline-block;
+    margin: 0 0 0 12px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 16px;
+    vertical-align: middle;
+    animation: fade-in;
+    animation-duration: .3s;
 }

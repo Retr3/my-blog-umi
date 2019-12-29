@@ -55,7 +55,7 @@ class AppRegisterForm extends React.Component {
   }
   render() {
     const { getFieldDecorator, getFieldError, getFieldValue } = this.props.form;
-    const { focusItem,code } = this.state;
+    const { focusItem } = this.state;
     return (
       <div className={this.props.className}>
         <h3 className='title'>后台管理系统注册</h3>
