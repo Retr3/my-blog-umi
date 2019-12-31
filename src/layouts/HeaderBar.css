@@ -11,6 +11,8 @@
 .header-ul{
   height: 100%;
   overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 /*crumb*/
 .crumb-ul{
@@ -50,13 +52,13 @@
 }
 .headNoticeAction div{
   display: inline-block;
-    width: 50%;
-    cursor: pointer;
-    transition: all .3s;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  width: 50%;
+  cursor: pointer;
+  transition: all .3s;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .headNoticeAction div:not(:only-child):last-child {
   border-left: 1px solid #e8e8e8;
