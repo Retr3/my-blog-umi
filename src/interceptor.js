@@ -27,7 +27,21 @@ const codeMessage = {
     504: "网关超时",
     505: "HTTP 版本不受支持"
 };
-
+//请求拦截器，如果存在token则将token加入请求头
+axios.interceptors.request.use(
+  config => {
+    const token = window.localStorage.getItem("token");
+    if (token) {
+      // 判断是否存在token，如果存在的话，则每个http header都加上token
+      // Bearer是JWT的认证头部信息
+      config.headers.common["Authorization"] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  err => {
+    return Promise.reject(err);
+  }
+);
 // 仅拦截异常状态响应
 axios.interceptors.response.use(null, ({ response }) => {
   if (codeMessage[response.status]) {

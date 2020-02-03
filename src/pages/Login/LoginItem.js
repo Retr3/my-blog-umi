@@ -9,7 +9,7 @@ const styles = {
     opacity: 1
   },
 }
-@connect(state=>({isLogin: !!state.appLogin.token}))
+@connect(state=>({isLogin: !!state.appLogin.userid}))
 @Form.create()
 class AppLoginForm extends React.Component {
   state = {

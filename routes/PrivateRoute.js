@@ -1,7 +1,7 @@
 import Redirect from "umi/redirect";
 import { connect } from 'dva';
 
-export default connect(state=>({isLogin: !!state.appLogin.token}),{
+export default connect(state=>({isLogin: !!state.appLogin.userid}),{
   setBreadCrumbFn: path => ({
     type: "appBreadcrumb/setCrumbListFn",path
   })

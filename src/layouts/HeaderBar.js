@@ -17,7 +17,7 @@ const noticeData = [{
   title:'通知三',
   description:'2小时前'
 },]
-@connect(state=>({isLogin: !!state.appLogin.token}),{
+@connect(state=>({isLogin: !!state.appLogin.userid}),{
   getLogoutFn: () => ({
     type: "appLogin/logoutFn"
   })
@@ -104,7 +104,7 @@ class HeaderBar extends React.Component {
       <Dropdown overlay={userMenu}>
         <span>
           {src?<Avatar size={24} src={avatar} style={{marginRight:'10px'}} />:<Avatar size={24} style={{ backgroundColor: '#87d068' , marginRight:'10px'}} icon="user" />}
-          <span style={{fontSize:'18px'}}>{JSON.parse(localStorage.getItem('userinfo')).username}</span>
+          <span style={{fontSize:'18px'}}>{JSON.parse(localStorage.getItem('userinfo')).nickname}</span>
         </span>
 
       </Dropdown>)

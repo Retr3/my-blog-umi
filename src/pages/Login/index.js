@@ -4,7 +4,7 @@ import RegisterForm from './RegisterForm'
 import LoginLoading from '../../components/Loading/LoginLoading'
 import loadImgAsync from '../../utils/imageLoad'
 import { connect } from 'dva';
-@connect(state=>({isLogin: !!state.appLogin.token}))
+@connect(state=>({isLogin: !!state.appLogin.userid}))
 class AppLogin extends React.Component {
   state={
     showBox: 'login',   //展示当前表单
