@@ -8,7 +8,7 @@ import { connect } from 'dva';
 class AppLogin extends React.Component {
   state={
     showBox: 'login',   //展示当前表单
-    url: 'http://h1.ioliu.cn/bing/ReindeerNorway_ZH-CN5913190372_1920x1080.jpg',  //背景图片
+    url: new Date().getHours() > 6 && new Date().getHours() < 18 ?'http://127.0.0.1:7070/public/images/login-morning.jpg':'http://127.0.0.1:7070/public/images/login-night.jpg',  //背景图片
     loading:false,
   }
   componentDidMount(){
