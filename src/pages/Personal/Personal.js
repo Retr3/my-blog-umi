@@ -5,6 +5,7 @@ import { Upload, Card, Row, Col, Button, Icon, Typography, Divider, Table, Tabs,
 import PanThumb from '../../components/PanThumb/PanThumb'
 import MyTags from '../../components/MyTags/MyTags'
 import ModifyPassword from '../../components/ModifyPassword/ModifyPassword'
+import ModifyPersonal from '../../components/ModifyPersonal/Modifypersonal'
 import { isIp } from '../../utils/validator'
 import loadImgAsync from '../../utils/imageLoad'
 import copy from 'copy-to-clipboard';
@@ -60,6 +61,7 @@ class Personal extends React.Component{
     modelVisible:false,//黑名单模态框
     ModifyPasswordVisible:false,//密码模态框
     tagsVisible:false,//标签模态框
+    ModifyPersonalVis:false,//个人信息框
     blackIp:'',
     ipValidateStatus:'',
     ipHelp:'',
@@ -87,6 +89,13 @@ class Personal extends React.Component{
       e.preventDefault();
       this.generateCode();
       }}  key="article-tags">生成</a>]
+  },{
+    title:'个人信息',
+    description:'个人信息修改',
+    active:[<a href="c" onClick={e=>{    
+      e.preventDefault();
+      this.personInfo(true);
+      }}  key="article-tags">修改</a>]
   }]
   componentDidMount(){
     this.props.getBlackListFn();
@@ -202,6 +211,7 @@ class Personal extends React.Component{
       Modal.success({
         title: '注册码生成成功',
         okText:'确定',
+        //content: <Paragraph copyable>{code}</Paragraph>
         content: <Tooltip title="点击复制"><div className={styles['code-model']} onClick={()=>this.copyCode(code)}>{code}</div></Tooltip>
       });
     }
@@ -264,7 +274,7 @@ class Personal extends React.Component{
     const { addBlackListInfoFn } = this.props;
     let flag = this.confirmIp(blackIp);
     if(flag){
-      addBlackListInfoFn(blackIp,'');
+      addBlackListInfoFn(blackIp);
       this.setState({modelVisible:false,ipHelp:'',ipValidateStatus:''})
     }
   }
@@ -292,8 +302,17 @@ class Personal extends React.Component{
         return false;
       }
   }
+  //个人信息修改
+  personInfo = visible =>{
+    this.setState({
+      ModifyPersonalVis:visible
+    })
+  }
+  submitPersonal = () =>{
+    this.child.submitPersonal()
+  }
   render(){
-    const { tags, tagInputVisible, tagValue, autograph, loading, percent,modelVisible, ModifyPasswordVisible, tagsVisible, ipValidateStatus, ipHelp, avatarLoad } = this.state;
+    const { tags, tagInputVisible, tagValue, autograph, loading, percent,modelVisible, ModifyPasswordVisible, tagsVisible, ipValidateStatus, ipHelp, avatarLoad, ModifyPersonalVis } = this.state;
     const { blackList } = this.props;
       return (
         <div>
@@ -332,7 +351,7 @@ class Personal extends React.Component{
                       Rick
                     </div>
                     <div>
-                      <Paragraph ellipsis={true} editable={{ onChange: this.autographChange }}>{autograph}</Paragraph>
+                      <div>{autograph}</div>
                     </div>
                   </div>
                   <div className={styles["avatar-info"]}>
@@ -436,6 +455,17 @@ class Personal extends React.Component{
                 tagSaveInputRef={this.tagSaveInputRef}
                 limit={8}
             ></MyTags>
+          </Modal>
+          <Modal
+            title="个人信息修改"
+            visible={ModifyPersonalVis}
+            destroyOnClose={true}
+            onOk={this.submitPersonal}
+            onCancel={()=>{this.setState({ModifyPersonalVis:false})}}
+            okText='确定'
+            cancelText="取消"
+          >
+            <ModifyPersonal onRef={this.onRef} ></ModifyPersonal>
           </Modal>
         </div>
       );

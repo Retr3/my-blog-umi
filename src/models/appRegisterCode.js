@@ -1,8 +1,8 @@
 import axios from "axios";
 import { message } from 'antd';
 function getRegisterCode(){
-    return axios.get("/api/getRegisterCode").then(res=>{
-        return {codeStr:res.data.codeStr};
+    return axios.post("/api/code").then(res=>{
+        return {code: res.data.code, codeInfo: res.data.codeInfo};
     });
 }
 export default {
@@ -13,10 +13,11 @@ export default {
     effects:{
         *getRegisterCodeFn(obj,{call,put}){
             try{
-                const { codeStr } = yield call(getRegisterCode);
-                if(codeStr){
-                    yield put({ type: "setCode",codeStr});
+                const { code, codeInfo } = yield call(getRegisterCode);
+                if(code === 0){
+                    yield put({ type: "setCode",codeInfo});
                 }else{
+                    yield put({ type: "setCode",codeInfo});
                     message.error(`注册码生成失败`);
                 }
             }catch(err){
@@ -26,7 +27,7 @@ export default {
     },
     reducers:{
         setCode(state,action){
-            return {registerCode:action.codeStr}
+            return {registerCode:action.codeInfo}
         }
     }
 }

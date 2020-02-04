@@ -45,6 +45,10 @@ axios.interceptors.request.use(
 // 仅拦截异常状态响应
 axios.interceptors.response.use(null, ({ response }) => {
   if (codeMessage[response.status]) {
+    if(response.status === 401){
+      window.localStorage.removeItem("userinfo");
+      window.localStorage.removeItem("token");
+    }
     notification.error({
         duration:2,
         message: `请求错误 ${response.status}: ${response.config.url}`,

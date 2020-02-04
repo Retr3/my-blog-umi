@@ -1,21 +1,22 @@
 import axios from "axios";
+import getLocation from '../utils/fixedPosition.js';
 import { message, notification } from 'antd';
 //获取黑名单列表
 function getBlackList(){
-    return axios.get("/api/getBlackList").then(res=>{
-        return {data:res.data.data};
+    return axios.get("/api/blacklist").then(res=>{
+        return {data:res.data};
     });
 }
 //添加黑名单
 function addBlackListInfo(ip,location){
-    return axios.post("/api/addBlackListInfo",{ip,location}).then(res=>{
-        return {code:res.data.code};
+    return axios.post("/api/blacklist",{ip,location}).then(res=>{
+        return {code:res.data.code, message: res.data.msg};
     });
 }
 //删除黑名单
 function delBlackListInfo(ip){
-    return axios.post("/api/delBlackListInfo",{ip}).then(res=>{
-        return {code:res.data.code};
+    return axios.delete(`/api/blacklist/${ip}`).then(res=>{
+        return {code:res.data.code, message: res.data.msg};
     });
 }
 export default {
@@ -38,14 +39,26 @@ export default {
                 message.error(`黑名单初始化失败`);
             }
         },
-        *addBlackListInfoFn({ip,location},{call,put}){
+        *addBlackListInfoFn({ip},{call,put}){
             try{
-                const { code } = yield call(addBlackListInfo,ip,location);
-                if(code === 0){
-                    notification.success({message: '黑名单添加成功',duration:1});
-                    yield put({ type: "getBlackListFn"});
-                }else{
-                    notification.error({message: '黑名单添加失败',duration:1});
+                const fixPosition = yield getLocation(ip);
+                let location = '无定位';
+                if( fixPosition ){
+                  const { ad_info } = fixPosition;
+                  location = ad_info.nation+ad_info.province+ad_info.city;
+                }
+                const { code, message } = yield call(addBlackListInfo,ip,location);
+                switch (code) {
+                    case 0:
+                      notification.success({message, duration:1});
+                      yield put({ type: "getBlackListFn"});
+                      break;
+                    case -1:
+                      notification.warning({message, duration:1});
+                      break;
+                    default:
+                      notification.error({message, duration:1});
+                      break;
                 }
             }catch(err){
                 console.log(err);
@@ -54,12 +67,12 @@ export default {
         },
         *delBlackListInfoFn({ip},{call,put}){
             try{
-                const { code } = yield call(delBlackListInfo,ip);
+                const { code, message } = yield call(delBlackListInfo,ip);
                 if(code === 0){
-                    notification.success({message: '成功移出黑名单',duration:1});
+                    notification.success({message,duration:1});
                     yield put({ type: "getBlackListFn"});
                 }else{
-                    notification.error({message: '移出黑名单失败',duration:1});
+                    notification.error({message,duration:1});
                 }
             }catch(err){
                 console.log(err);
