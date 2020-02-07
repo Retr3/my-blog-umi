@@ -2,21 +2,21 @@ import { Input, Tag, Icon } from 'antd';
 import { TweenOneGroup } from 'rc-tween-one';
 
 export default function MyTags({tags,tagInputVisible,tagValue,removeTag,showTagInput,tagInputChange,tagInputConfirm,tagSaveInputRef,limit}){
-    const forMap = tag => {
+    const forMap = (tag, index) => {
         const tagElem = (
           <Tag
             closable
             style={{'margin':'5px 5px'}}
             onClose={e => {
               e.preventDefault();
-              removeTag(tag);
+              removeTag(tag.id);
             }}
           >
-            {tag}
+            {tag.content}
           </Tag>
         );
         return (
-          <span key={tag} style={{ display: 'inline-block' }}>
+          <span key={tag.content+index} style={{ display: 'inline-block' }}>
             {tagElem}
           </span>
         );

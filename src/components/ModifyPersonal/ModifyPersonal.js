@@ -24,7 +24,7 @@ class ModifyPersonal extends React.Component{
             if (!err) {
                 console.log('Received values of form: ', values);
                 const {nickname, sign, occupation, company, location, team} = values;
-                const teams = team.filter(item=> !!item);
+                const teams = !!teams && teams.length>0?team.filter(item=> !!item):'';
                 console.log(teams);
                 // await updatePersonalInfoFn({payload:{ nickname, sign, occupation, company, location, team }});
             }

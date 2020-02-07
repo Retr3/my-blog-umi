@@ -1,8 +1,8 @@
 import axios from "axios";
 import { message } from 'antd';
 function appRePassword(payload) {
-    return axios.post("/api/appRePassword", payload).then(res=>{
-        return {code:res.data.code}
+    return axios.put(`/api/subscriberinfo/${payload.userid}`, payload.password).then(res=>{
+        return { code:res.data.code, msg: res.data.msg };
     });
 }
 export default {
@@ -13,14 +13,17 @@ export default {
     effects: {
         *rePasswordFn({ payload }, { call, put }) {
             try {
-              const {code} = yield call(appRePassword,payload);
+              const data = { userid: JSON.parse(window.localStorage.getItem('userinfo')).userid, password: payload };
+              const {code} = yield call(appRePassword,data);
               console.log(code);
                 if(code === 0){
                     message.success(`密码修改成功,下次登录时生效`);
                     yield put({ type: "changeErrorFlag",code})
-                }else{
+                }else if(code === -2){
                     yield put({ type: "changeErrorFlag",code})
                     message.error(`旧密码错误`);
+                }else{
+                    message.error(`密码修改出错`);
                 }
             } catch (error) {
                 message.error(`密码修改出错`);

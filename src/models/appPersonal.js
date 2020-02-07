@@ -16,10 +16,10 @@ export default {
                     localStorage.setItem("userinfo", JSON.stringify(personalInfo));
                     message.success("信息修改成功");
                 }else{
-                    message.error(`注册码生成失败`);
+                    message.error(`信息修改失败`);
                 }
             }catch(err){
-                message.error(`注册码生成失败`);
+                message.error(`信息修改失败`);
             }
         }
     }

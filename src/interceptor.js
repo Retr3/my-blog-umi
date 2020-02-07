@@ -8,6 +8,7 @@ const codeMessage = {
     307: "临时重定向",
     400: "错误的请求",
     401: "用户没有权限（令牌、用户名、密码错误）",
+    402: "Token过期",
     403: "禁止访问",
     404: "请求不存在",
     405: "用来访问本页面的 HTTP方法不被允许",
@@ -45,9 +46,10 @@ axios.interceptors.request.use(
 // 仅拦截异常状态响应
 axios.interceptors.response.use(null, ({ response }) => {
   if (codeMessage[response.status]) {
-    if(response.status === 401){
+    if(response.status === 402){
       window.localStorage.removeItem("userinfo");
       window.localStorage.removeItem("token");
+      window.location.reload();
     }
     notification.error({
         duration:2,

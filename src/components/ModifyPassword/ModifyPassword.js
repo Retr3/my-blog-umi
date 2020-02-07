@@ -24,7 +24,7 @@ class ModifyPassword extends React.Component{
             if (!err) {
                 console.log('Received values of form: ', values);
                 let {oldpassword,newpassword} = values;
-                await rePasswordFn({payload:{oldpassword,newpassword}});
+                await rePasswordFn({oldpassword,newpassword});
                 repasswordModel(!!(this.props.errorFlag<0))
             }
         });

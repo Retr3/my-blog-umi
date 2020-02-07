@@ -15,9 +15,10 @@ let experienceId = 0;
   getResumeInfo: () => ({
     type: "appResumeInfo/getResumeInfoFn"
   }),
-  setResumeInfo: (formData,that) =>({
-    type: "appResumeInfo/addOrUpdateResumeInfo",
+  setResumeInfo: (formData, resumeId, that) =>({
+    type: "appResumeInfo/updateResumeInfo",
     formData,
+    resumeId,
     that
   })
 })
@@ -27,15 +28,15 @@ class Resumeonline extends React.Component{
     editStatus:false,
     loading:false,
     workYears:0,//工作年限
-    age:0,//年龄
+    nowAge:0,//年龄
     //数据
     resumename: "",
     sex:"1",
     birthday: '1994-01',
     email: "",
-    colleges: "",
-    position: "",
-    cityname: "",
+    education: "",
+    occupation: "",
+    intentionCity: "",
     entryTime: 0,
     worktime: "2019-01",//工作起始日期
     jobintention: "",
@@ -50,9 +51,12 @@ class Resumeonline extends React.Component{
   entryTimeList=[
     '随时','一周内','15天内','一个月'
   ]
-  async componentDidMount(){
+  componentDidMount(){
+    this.resumeInit();
+  }
+  //初始化方法
+  resumeInit = async () =>{
     await this.props.getResumeInfo();
-    //console.log(this.props.resumeInfo);
     if(this.props.resumeInfo){
       this.getResumeValue();
       this.ageChange(moment(this.props.resumeInfo.age));
@@ -83,14 +87,14 @@ class Resumeonline extends React.Component{
   };
   //年龄fn
   ageChange = date => {
-    let age = 0;
+    let nowAge = 0;
     if(date){
       let end_date = new Date();
       let start_date = date; 
-      age = parseInt(-start_date.diff(end_date, 'months')/12).toFixed(0);
+      nowAge = parseInt(-start_date.diff(end_date, 'months')/12).toFixed(0);
     }
     this.setState({
-      age
+      nowAge
     })
   }
   //工作时间fn
@@ -123,9 +127,16 @@ class Resumeonline extends React.Component{
   removeSkill = key =>{
     const { form } = this.props;
     const keys = form.getFieldValue('keys');
-    form.setFieldsValue({
-      keys: keys.filter(k => k !== key),
-    });
+    const skills = this.state.skills.filter((k, i) => i !== key);
+    const slider = this.state.slider.filter((k, i) => i !== key);
+    this.setState({
+      skills,
+      slider
+    },()=>{
+      form.setFieldsValue({
+        keys: keys.filter(k => k !== key)
+      });
+    })
   }
   //添加经历
   addTimeLine = () =>{
@@ -140,9 +151,16 @@ class Resumeonline extends React.Component{
   removeTimeLine = id =>{
     const { form } = this.props;
     const timelines = form.getFieldValue('timelines');
-    form.setFieldsValue({
-      timelines: timelines.filter(k => k !== id),
-    });
+    const experience = this.state.experience.filter((k, i) => i !== id);
+    const experiencetime = this.state.experiencetime.filter((k, i) => i !== id);
+    this.setState({
+      experience,
+      experiencetime
+    },()=>{
+      form.setFieldsValue({
+        timelines: timelines.filter(k => k !== id)
+      });
+    })
   }
   //全局保存
   toSaveInfo = () =>{
@@ -152,16 +170,38 @@ class Resumeonline extends React.Component{
         this.setState({
           loading:true
         },()=>{
-          values.age = momentToStr(values.age);
+          values.birthday = momentToStr(values.birthday);
           values.worktime = momentToStr(values.worktime);
-          values.experiencetime = values.experiencetime.map(item=>{
+          values.experiencetime = !!values.experiencetime? values.experiencetime.map(item=>{
             return momentToStr(item) 
-          })
-          //模拟异步
-          // setTimeout(()=>{
-          //   this.props.setResumeInfo(values,this)
-          // },1000)
-          this.props.setResumeInfo(values,this)
+          }) :"";
+          values.experience = !!values.experience? values.experience.filter(item=>!!item === true): '';
+          values.experiencetime = !!values.experiencetime? values.experiencetime.filter(item=>!!item === true): '';
+          values.skills = !!values.skills? values.skills.filter(item=>!!item === true): '';
+          values.slider = !!values.slider? values.slider.filter(item=>!!item === true): '';
+          const { id, experient_tree_list, skill_id_list, userid } = this.props.resumeInfo;
+          console.log(values);
+          this.props.setResumeInfo({
+            name: values.resumename,
+            sex: values.sex,
+            age: values.birthday,
+            email: values.email,
+            education: values.education,
+            occupation: values.occupation,
+            intention_city: values.intentionCity,
+            fastest_arrival_time: values.entryTime,
+            work_experience: values.worktime,
+            job_intention: values.jobintention,
+            hobby: values.hobby,
+            self_evaluation: values.selfdescription,
+            skill_id_list,
+            skill_name: values.skills,
+            slider: values.slider,
+            experience: values.experience,
+            experiencetime: values.experiencetime,
+            experient_tree_list,
+            userid
+          },id,this)
         })
       }
     });
@@ -175,23 +215,27 @@ class Resumeonline extends React.Component{
   getResumeValue = () =>{
     if(this.props.resumeInfo){
       this.setState({
-        resumename : this.props.resumeInfo.resumename,
+        resumename : this.props.resumeInfo.name,
         sex : this.props.resumeInfo.sex,
         birthday : this.props.resumeInfo.age,
         email : this.props.resumeInfo.email,
-        colleges : this.props.resumeInfo.colleges,
-        position : this.props.resumeInfo.position,
-        cityname : this.props.resumeInfo.cityname,
-        entryTime : this.props.resumeInfo.entryTime,
-        worktime : this.props.resumeInfo.worktime,
-        jobintention : this.props.resumeInfo.jobintention,
+        education : this.props.resumeInfo.education,
+        occupation : this.props.resumeInfo.occupation,
+        intentionCity : this.props.resumeInfo.intention_city,
+        entryTime : this.props.resumeInfo.fastest_arrival_time,
+        worktime : this.props.resumeInfo.work_experience,
+        jobintention : this.props.resumeInfo.job_intention,
         hobby : this.props.resumeInfo.hobby,
-        selfdescription : this.props.resumeInfo.selfdescription,
-        skills : this.props.resumeInfo.skills,
-        slider : this.props.resumeInfo.slider,
-        experience : this.props.resumeInfo.experience,
-        experiencetime : this.props.resumeInfo.experiencetime
+        selfdescription : this.props.resumeInfo.self_evaluation,
+        skills : !!this.props.resumeInfo.skill_name ? this.props.resumeInfo.skill_name : [],
+        slider : !!this.props.resumeInfo.slider ? this.props.resumeInfo.slider : [],
+        experience : !!this.props.resumeInfo.experience ? this.props.resumeInfo.experience : [],
+        experiencetime : !!this.props.resumeInfo.experiencetime ? this.props.resumeInfo.experiencetime : []
       },()=>{
+        this.props.form.setFieldsValue({
+          keys: [],
+          timelines: []
+        });
         this.state.skills.map(()=>{
           return this.addSkill();
         })
@@ -207,7 +251,6 @@ class Resumeonline extends React.Component{
     getFieldDecorator('timelines', { initialValue: [] });
     const keys = getFieldValue('keys');
     const timelines = getFieldValue('timelines');
-
     const  skillItem = keys.map((k, index) => (
               <Row key={k} gutter={[16,16]} className={styles['skill-panel']}>
                 <Col span={12}>
@@ -297,16 +340,16 @@ class Resumeonline extends React.Component{
                 <div>
                   {getFieldDecorator("sex",{initialValue:this.state.sex})(
                     <Radio.Group onChange={this.radioChange} >
-                      <Radio value={"1"}>男</Radio>
-                      <Radio value={"2"}>女</Radio>
+                      <Radio value={1}>男</Radio>
+                      <Radio value={2}>女</Radio>
                     </Radio.Group>
                   )}
                 </div>
-                :(this.state.sex==="1"?'男':'女')}
+                :(this.state.sex=== 1?'男':'女')}
               </Descriptions.Item>
               <Descriptions.Item label="年龄">{this.state.editStatus?
                   <Form.Item className={styles['month-panel']}>
-                    {getFieldDecorator("age",{
+                    {getFieldDecorator("birthday",{
                       initialValue:moment(this.state.birthday),
                       rules: [
                         {
@@ -319,8 +362,8 @@ class Resumeonline extends React.Component{
                       onChange={this.ageChange} 
                       defaultPickerValue={moment(this.state.birthday)} 
                       disabledDate={this.disabledDate} placeholder="出生日期" />)}
-                    <div>{this.state.age}岁</div>
-                  </Form.Item>:this.state.age+'岁'}
+                    <div>{this.state.nowAge}岁</div>
+                  </Form.Item>:this.state.nowAge+'岁'}
               </Descriptions.Item>
               <Descriptions.Item label="邮箱" span={1.5}>{this.state.editStatus?
                   <Form.Item>
@@ -344,8 +387,8 @@ class Resumeonline extends React.Component{
               </Descriptions.Item>
               <Descriptions.Item label="毕业院校" span={1.5} >{this.state.editStatus?
                   <Form.Item>
-                    {getFieldDecorator("colleges",{
-                      initialValue:this.state.colleges,
+                    {getFieldDecorator("education",{
+                      initialValue:this.state.education,
                       validateFirst: true,
                       rules: [
                         {
@@ -360,12 +403,12 @@ class Resumeonline extends React.Component{
                         }
                       ]
                     })(<Input maxLength={20} placeholder="院校" />)}
-                  </Form.Item>:this.state.colleges}
+                  </Form.Item>:this.state.education}
               </Descriptions.Item>
               <Descriptions.Item label="职位"span={1.5}>{this.state.editStatus?
                   <Form.Item>
-                    {getFieldDecorator("position",{
-                      initialValue:this.state.position,
+                    {getFieldDecorator("occupation",{
+                      initialValue:this.state.occupation,
                       validateFirst: true,
                       rules: [
                         {
@@ -380,12 +423,12 @@ class Resumeonline extends React.Component{
                         }
                       ]
                     })(<Input maxLength={20} placeholder="职位" />)}
-              </Form.Item>:this.state.position}
+              </Form.Item>:this.state.occupation}
               </Descriptions.Item>
               <Descriptions.Item label="意向城市" span={1.5}>{this.state.editStatus?
               <Form.Item>
-                {getFieldDecorator("cityname",{
-                    initialValue:this.state.cityname,
+                {getFieldDecorator("intentionCity",{
+                    initialValue:this.state.intentionCity,
                     rules: [
                       {
                         required: true,
@@ -401,15 +444,15 @@ class Resumeonline extends React.Component{
                   }>
                   {cityList.map(item=><Option key={item.id} value={item.city_name}>{item.city_name}</Option>)}
                 </Select>)}
-            </Form.Item>:this.state.cityname}
+            </Form.Item>:this.state.intentionCity}
               </Descriptions.Item>
               <Descriptions.Item label="最快到岗时间" span={1.5}>{this.state.editStatus?
                   <div>
                     {getFieldDecorator("entryTime",{initialValue:this.state.entryTime})(<Select style={{width:'285px'}}>
-                      <Option value="0">随时</Option>
-                      <Option value="1">一周内</Option>
-                      <Option value="2">15天内</Option>
-                      <Option value="3">一个月</Option>
+                      <Option value={0}>随时</Option>
+                      <Option value={1}>一周内</Option>
+                      <Option value={2}>15天内</Option>
+                      <Option value={3}>一个月</Option>
                     </Select>)}
                   </div>
                  :this.entryTimeList[parseInt(this.state.entryTime)]}
@@ -451,9 +494,9 @@ class Resumeonline extends React.Component{
               <Descriptions.Item label="技能特长" span={3}>{this.state.editStatus?
                 <div>
                   {skillItem}
-                  <Button type="dashed" onClick={this.addSkill} style={{ width: '49%' }}>
+                  {keys.length<12?<Button type="dashed" onClick={this.addSkill} style={{ width: '49%' }}>
                     <Icon type="plus" /> 添加技能
-                  </Button>
+                  </Button>:''}
                 </div>
                  :<div>
                     {this.state.skills.map((key,index)=>
@@ -507,9 +550,9 @@ class Resumeonline extends React.Component{
                 <Timeline>
                   {jobexperienceItem}
                 </Timeline>
-                <Button type="primary" onClick={this.addTimeLine}>
+                {timelines.length<12?<Button type="primary" onClick={this.addTimeLine}>
                   <Icon type="plus" /> 添加经历
-                </Button>
+                </Button>:''}
               </div>:<Timeline>
                     {this.state.experience.map((item,index)=>{
                       return <Timeline.Item key={"timetext"+index}>

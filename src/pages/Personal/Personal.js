@@ -45,6 +45,9 @@ const teamList=[{
   updateTagsFn:tags =>({
     type: "appTags/updateTagsFn",tags
   }),
+  delTagsFn:id =>({
+    type: "appTags/delTagsFn",id
+  }),
   getRegisterCodeFn:() =>({
     type: "appRegisterCode/getRegisterCodeFn"
   })
@@ -114,10 +117,14 @@ class Personal extends React.Component{
     })
   }
   //tags
-  removeTag = removedTag => {
-    const tags = this.state.tags.filter(tag => tag !== removedTag);
-    console.log(tags);
-    this.setState({ tags });
+  removeTag = async removedTag => {
+    // const tags = this.state.tags.filter(tag => tag.content !== removedTag);
+    // console.log(tags);
+    // this.setState({ tags });
+    await this.props.delTagsFn(removedTag);
+    this.setState({
+      tags:this.props.tagsInfo
+    })
   };
 
   showTagInput = () => {
@@ -131,8 +138,8 @@ class Personal extends React.Component{
   tagInputConfirm = () => {
     const { tagValue } = this.state;
     let { tags } = this.state;
-    if (tagValue && tags.indexOf(tagValue) === -1) {
-      tags = [...tags, tagValue];
+    if (tagValue && tags.findIndex(item=>tagValue === item.content) === -1) {
+      tags = [...tags, {userid:JSON.parse(window.localStorage.getItem('userinfo')).userid,content:tagValue}];
     }
     console.log(tags);
     this.setState({

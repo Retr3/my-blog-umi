@@ -55,28 +55,45 @@ class ResumeUpload extends React.Component {
       uploading:true
     },()=>{
       const { fileList } = this.state;
-      const formData = new FormData();
-      formData.append('files[]', fileList[0]);
+
+      let formData = new FormData();
       formData.append("remarks", this.state.remarks);
-      axios({
-        url: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-        method: 'post',
+      formData.append('filesize',fileList[0].size)
+      formData.append("userid", JSON.parse(window.localStorage.getItem('userinfo')).userid);
+      formData.append('file',fileList[0])
+      axios.post('/api/appendix',formData,{
+        headers: {
+          'Content-Type':'multipart/form-data'
+        },
         cancelToken: new CancelToken(function (c) {
           cancel = c;
         }),
-        data: formData,
         onUploadProgress: function (progressEvent) {
           that.setState({
             percent:parseInt((progressEvent.loaded/progressEvent.total)*100)
           })
         },
-      }).then(res=>{
-        message.success(`${this.state.fileList[0].name} 上传成功`);
-        this.setState({
-          uploading:false,
-          fileList:[],
-          percent:0
-        })
+      })
+      .then(async res=>{
+        const code = await res.data.code;
+        if(code === 0){
+          message.success(`${this.state.fileList[0].name} 上传成功`);
+          this.setState({
+            uploading:false,
+            fileList:[],
+            percent:0
+          })
+          this.props.dispatch({type:"appResume/getFileListFn"});
+        }else{
+          message.error(`${this.state.fileList[0].name} 上传失败`)
+          this.setState({
+            uploading:false,
+            fileList:[],
+            percent:0,
+            cancelUpload:false
+          })
+        }
+        
       }).catch(err=>{
         if(!this.state.cancelUpload){message.error(`${this.state.fileList[0].name} 上传失败`);}
         console.log(err);
@@ -118,9 +135,9 @@ class ResumeUpload extends React.Component {
       deleting:false
     })
   }
-  downloadFile = url =>{
+  downloadFile = (path, filename) =>{
     //新建窗口模拟下载
-    window.open(url);
+    this.props.dispatch({type:"appResume/downloadFileFn",data:{path, filename}});
   }
   //显示文件详细信息
   showFileInfo = item=>{
@@ -179,16 +196,16 @@ class ResumeUpload extends React.Component {
                   <div>
                       {this.state.deleting?
                       <List.Item  key={item.id} className={styles['filelist-item']}>
-                        <div>{item.fileName}</div>
+                        <div>{item.resume_file_name}</div>
                         <div className={styles['item-operate']}>
                           <div><Icon type="download" style={{ fontSize: '16px', color: '#e8e8e8' }} /></div>
                           <div><Icon type="delete" style={{ fontSize: '16px', color: '#e8e8e8' }} /></div>
                         </div>
                       </List.Item>:
                       <List.Item key={item.id} className={styles['filelist-item']}>
-                        <span onClick={()=>this.showFileInfo(item)}>{item.fileName}</span>
+                        <span onClick={()=>this.showFileInfo(item)}>{item.resume_file_name}</span>
                         <div className={styles['item-operate']}>
-                          <div onClick={()=>this.downloadFile(item.downloadUrl)}><Icon type="download" style={{ fontSize: '16px', color: '#40a9ff' }} /></div>
+                          <div onClick={()=>this.downloadFile(item.filepath,item.resume_file_name)}><Icon type="download" style={{ fontSize: '16px', color: '#40a9ff' }} /></div>
                           
                           <Popconfirm
                             placement="rightTop"
@@ -209,11 +226,11 @@ class ResumeUpload extends React.Component {
           <Col xl={{span:12}} md={{span:12}} xs={{span:24}}>
             {this.state.fileInfo?<Card title="文件详情" headStyle={{color:"#40a9ff"}} bordered={false}>
               <Descriptions column={1}>
-                <Descriptions.Item label="文件名"><span className={styles['fileInfo']}>{this.state.fileInfo.fileName}</span></Descriptions.Item>
-                <Descriptions.Item label="文件大小"><span className={styles['fileInfo']}>{this.state.fileInfo.fileSize}</span></Descriptions.Item>
-                <Descriptions.Item label="上传用户"><span className={styles['fileInfo']}>{this.state.fileInfo.uploadUser}</span></Descriptions.Item>
-                <Descriptions.Item label="上传日期"><span className={styles['fileInfo']}>{this.state.fileInfo.uploadTime}</span></Descriptions.Item>
-                <Descriptions.Item label="备注"><span className={styles['fileInfo']}>{this.state.fileInfo.remarks}</span></Descriptions.Item>
+                <Descriptions.Item label="文件名"><span className={styles['fileInfo']}>{this.state.fileInfo.resume_file_name}</span></Descriptions.Item>
+                <Descriptions.Item label="文件大小"><span className={styles['fileInfo']}>{(this.state.fileInfo.filesize/1024/1024).toFixed(2)+'MB'}</span></Descriptions.Item>
+                <Descriptions.Item label="上传用户"><span className={styles['fileInfo']}>{this.state.fileInfo.uploaduser}</span></Descriptions.Item>
+                <Descriptions.Item label="上传日期"><span className={styles['fileInfo']}>{this.state.fileInfo.uploadtime}</span></Descriptions.Item>
+                <Descriptions.Item label="备注"><span className={styles['fileInfo']}>{this.state.fileInfo.remark}</span></Descriptions.Item>
               </Descriptions>
             </Card>:<Card title="文件信息" headStyle={{color:"#40a9ff"}} bordered={false}><Empty  className={styles['fileinfo-empty']} description={<span style={{color:'rgba(0, 0, 0, 0.4)'}}>点击左侧文件名可查看文件详情信息</span>} /></Card>}
           </Col>

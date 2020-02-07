@@ -1,12 +1,17 @@
 import axios from "axios";
 import { message } from 'antd';
-function getResumeInfo(){
-    return axios.get("/api/getResumeInfo").then(res=>{
-        return {data:res.data.data}
+function getResumeInfo(userid){
+    return axios.get(`/api/resumeInfo/${userid}`).then(res=>{
+        return {data:res.data}
     })
 }
-function setResumeInfo(formData){
-    return axios.post("/api/setResumeInfo", {formData}).then(res=>{
+function createResumeInfo(payload){
+    return axios.post(`/api/resumeInfo`,payload).then(res=>{
+        return {newResumeInfo:res.data}
+    })
+}
+function setResumeInfo(payload){
+    return axios.put(`/api/resumeInfo/${payload.resumeId}`, {...payload.formData}).then(res=>{
         return {code:res.data.code}
     });
 }
@@ -18,17 +23,23 @@ export default {
     effects:{
         *getResumeInfoFn(obj,{call, put}){
             try{
-                const { data } = yield call(getResumeInfo);
-                yield put({ type: "setResumeInfo", resumeInfo: data.resumeInfo });
+                const userid = JSON.parse(window.localStorage.getItem('userinfo')).userid;
+                let { data } = yield call(getResumeInfo, userid);
+                if(!(!!data)){
+                    const { newResumeInfo } = yield call(createResumeInfo, {userid, name: JSON.parse(window.localStorage.getItem('userinfo')).username })
+                    data = newResumeInfo;
+                }
+                yield put({ type: "setResumeInfo", resumeInfo: data });
             }catch(err){
                 console.log(err);
             }
         },
-        *addOrUpdateResumeInfo({formData,that},{call, put}){
+        *updateResumeInfo({formData, resumeId, that},{call, put}){
             try{
                 console.log(formData);
-                const { code } = yield call(setResumeInfo,formData);
+                const { code } = yield call(setResumeInfo,{formData,resumeId});
                 if(code === 0){
+                    that.resumeInit();
                     message.success("简历修改成功");
                     yield put({type:"getResumeInfoFn"})
                     that.setState({
