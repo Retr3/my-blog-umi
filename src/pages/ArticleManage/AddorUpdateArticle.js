@@ -36,7 +36,10 @@ function beforeUpload(file) {
     return isImg && isLt3M;
   }
 BraftEditor.use(Emoticon(options))
-@connect(state=>({articleInfo:state.appArticle.articleInfo}),{
+@connect(state=>({
+        articleInfo:state.appArticle.articleInfo,
+        tagsInfo: state.appTags.tags
+    }),{
     getArticleInfoFn: articleId => ({
         type: "appArticle/getArticleInfoFn",
         articleId
@@ -48,6 +51,10 @@ BraftEditor.use(Emoticon(options))
     }),
     resetArticleInfoFn: ()=> ({
         type: "appArticle/resetArticleInfo",
+    }),
+    //获取标签
+    getTagsFn: ()=> ({
+        type: "appTags/getTagsFn",
     })
   })
 @Form.create()
@@ -61,8 +68,9 @@ class AddorUpdateArticle extends React.Component {
         imgName:''//图片名
     }
     async componentDidMount(){
-        const { updateId, getArticleInfoFn } = this.props;
-        console.log(updateId); 
+        const { updateId, getArticleInfoFn, getTagsFn } = this.props;
+        console.log(updateId);
+        await getTagsFn();
         if(!!updateId){
             await getArticleInfoFn(updateId);
             this.setState({
@@ -188,11 +196,11 @@ class AddorUpdateArticle extends React.Component {
             }
         }
         const { getFieldDecorator } = this.props.form;
-        const { articleInfo } = this.props;
-        const selectChild = [];
-        for (let i = 1; i < 6; i++) {
-            selectChild.push(<Option key={'stag'+i} value={'标签'+i}>{'标签'+i}</Option>);
-        }
+        const { articleInfo, tagsInfo } = this.props;
+        // const selectChild = [];
+        // selectChild = tagsInfo.map((item, i) =>{
+        //     return <Option key={'stag'+i} value={item.content}>{item.content}</Option>
+        // })
         return (
             <div>
                 <Row>
@@ -257,7 +265,9 @@ class AddorUpdateArticle extends React.Component {
                                         maxTagCount={4}
                                         placeholder="请选择一个或多个标签"
                                     >
-                                        {selectChild}
+                                        {tagsInfo.map((item, i) =>{
+                                            return <Option key={'stag'+i} value={item.content}>{item.content}</Option>
+                                        })}
                                     </Select>
                                 )}
                             </Form.Item>

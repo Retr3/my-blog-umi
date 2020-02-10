@@ -12,23 +12,11 @@ import copy from 'copy-to-clipboard';
 const { Paragraph } = Typography;
 const { TabPane } = Tabs;
 const imgTypeList = ['image/jpeg','image/jpg','image/png','image/gif','image/bmp'];
-const teamList=[{
-    img:'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    name:'团队一'
-  },{
-    img:'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    name:'团队二'
-  },{
-    img:'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    name:'团队三'
-  },{
-    img:'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    name:'团队四'
-  }];
 @connect(state=>({
   blackList:state.appBlackList.blackListInfo,
   tagsInfo:state.appTags.tags,
-  registerCode:state.appRegisterCode.registerCode
+  registerCode:state.appRegisterCode.registerCode,
+  avatarPath: state.appPersonal.avatarPath,
 }),{
   getBlackListFn: () => ({
     type: "appBlackList/getBlackListFn"
@@ -50,11 +38,20 @@ const teamList=[{
   }),
   getRegisterCodeFn:() =>({
     type: "appRegisterCode/getRegisterCodeFn"
+  }),
+  setAvatarFn: (id, path) =>({
+    type: "appPersonal/setAvatarFn",id, path
   })
 })
 class Personal extends React.Component{
   state = {
-    autograph:'个性签名',//签名
+    avatarUrl:'',
+    autograph:'',//签名
+    occupation:'',
+    company:'',
+    location:'',
+    nickname:'',
+    team:[],
     tags: [],//tags值
     tagInputVisible: false,//tags输入框状态
     tagValue: '',//输入的tags值
@@ -102,6 +99,7 @@ class Personal extends React.Component{
   }]
   componentDidMount(){
     this.props.getBlackListFn();
+    this.initUserInfo();
     loadImgAsync('https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png').then(url=>{
       this.setState({
         avatarLoad:false
@@ -110,17 +108,25 @@ class Personal extends React.Component{
       console.log('图片加载失败'+err)
     })
   }
-  //签名fn
-  autographChange = text =>{
+  // 设置用户信息
+  initUserInfo = async () =>{
+    const userinfo = JSON.parse(window.localStorage.getItem('userinfo'));
     this.setState({
-      autograph:text
+      autograph:userinfo.sign,
+      occupation:userinfo.occupation,
+      company:userinfo.company,
+      location:userinfo.location,
+      nickname:userinfo.nickname,
+      team: !!userinfo.team ?userinfo.team.split(',') :[]
     })
+    if(!!userinfo.imagepath){
+      this.setState({
+        avatarUrl: userinfo.imagepath
+      })
+    }
   }
   //tags
   removeTag = async removedTag => {
-    // const tags = this.state.tags.filter(tag => tag.content !== removedTag);
-    // console.log(tags);
-    // this.setState({ tags });
     await this.props.delTagsFn(removedTag);
     this.setState({
       tags:this.props.tagsInfo
@@ -180,17 +186,23 @@ class Personal extends React.Component{
     }
     return isImg && isLt5M;
   }
-  uploadChange = info => {
+  uploadChange = async info => {
     const { status } = info.file;
     if (status !== 'uploading') {
       console.log(info.file.percent);
     }
     if (status === 'done') {
-      message.success(`头像上传成功`);
       this.setState({
         loading:false,
         fileList:[]
       })
+      const that = this;
+      if(info.file.response.code === 0){
+        await that.props.setAvatarFn(info.file.response.id, info.file.response.url);
+        that.setState({
+          avatarUrl: JSON.parse(window.localStorage.getItem('userinfo')).imagepath
+        })
+      }
       return ;
     } else if (status === 'error') {
       message.error(`头像上传失败`);
@@ -205,7 +217,7 @@ class Personal extends React.Component{
     }
     this.setState({
       fileList:info.fileList,
-      percent:parseInt(info.file.percent.toFixed(0))
+      percent:!!info.file.percent?parseInt(info.file.percent.toFixed(0)):0
     })
   }
 
@@ -315,12 +327,15 @@ class Personal extends React.Component{
       ModifyPersonalVis:visible
     })
   }
-  submitPersonal = () =>{
-    this.child.submitPersonal()
+  //个人信息提交
+  submitPersonal = async () =>{
+    await this.child.submitPersonal();
   }
   render(){
-    const { tags, tagInputVisible, tagValue, autograph, loading, percent,modelVisible, ModifyPasswordVisible, tagsVisible, ipValidateStatus, ipHelp, avatarLoad, ModifyPersonalVis } = this.state;
+    const { avatarUrl, nickname, occupation, company, location, team, autograph, tags, tagInputVisible, tagValue, loading, percent,modelVisible, ModifyPasswordVisible, tagsVisible, ipValidateStatus, ipHelp, avatarLoad, ModifyPersonalVis } = this.state;
     const { blackList } = this.props;
+    const headers = window.localStorage.getItem("token")?{"Authorization": `Bearer ${window.localStorage.getItem("token")}`}:''
+    const teamImg = 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
       return (
         <div>
           <Row gutter={[16,30]}>
@@ -333,13 +348,14 @@ class Personal extends React.Component{
                       width="100px" 
                       height='100px' 
                       zIndex='1' 
-                      imgUrl='https://wpimg.wallstcn.com/577965b9-bb9e-4e02-9f0c-095b41417191'
+                      imgUrl={!!avatarUrl?"http://127.0.0.1:7070"+avatarUrl:'https://wpimg.wallstcn.com/577965b9-bb9e-4e02-9f0c-095b41417191'}
                       >
                       <div id="personal-upload" className={styles['avatar-upload']}>
                         <Upload 
                           name='file'
                           disabled={loading}
-                          action = 'https://www.mocky.io/v2/5cc8019d300000980a055e76'
+                          action = '/api/imagelist'
+                          headers = {headers}
                           accept=".png,.jpg,.jpeg,.bmp,.gif"
                           fileList={this.state.fileList}
                           beforeUpload={this.beforeUpload}
@@ -355,29 +371,29 @@ class Personal extends React.Component{
                   </div>
                   <div className={styles['avatar-text']}>
                     <div className={styles['avatar-name']}>
-                      Rick
+                      {nickname}
                     </div>
                     <div>
-                      <div>{autograph}</div>
+                      <div>{!!autograph?autograph:'这个人很懒，没有留下任何签名'}</div>
                     </div>
                   </div>
                   <div className={styles["avatar-info"]}>
-                    <p><i className="iconfont icon-post"></i>前端工程师</p>
-                    <p><i className="iconfont icon-cluster"></i>XX公司,XX事业处,XX部门</p>
-                    <p><i className="iconfont icon-location2"></i>中国 上海市</p>
+                          <p><i className="iconfont icon-post"></i>{!!occupation?occupation:'暂无职位'}</p>
+                          <p><i className="iconfont icon-cluster"></i>{!!company?company:'暂无公司'}</p>
+                          <p><i className="iconfont icon-location2"></i>{!!location?location:'暂无定位城市'}</p>
                   </div>
                   <Divider dashed={true} />
                   <div className={styles['team-title']}>团队</div>
                   <Row gutter={16}>
                     {
-                      teamList.map(item=>(
-                        <Col span={12} key={item.name}>
+                      team.length>0?team.map((item, index)=>(
+                        <Col span={12} key={item+index}>
                           <span className={styles['team-text']} style={{padding:'5px 0'}}>
-                            <Avatar size="small" style={{'marginRight':'5px'}}src={item.img} />
-                            <span>{item.name}</span>
+                            <Avatar size="small" style={{'marginRight':'5px'}}src={teamImg} />
+                            <span>{item}</span>
                           </span>
                         </Col>
-                      ))
+                      )):<div style={{padding:'7px'}}>暂无团队</div>
                     }
                   </Row>
               </Card>
@@ -440,7 +456,7 @@ class Personal extends React.Component{
             okText='确定'
             cancelText="取消"
           >
-              <ModifyPassword onRef={this.onRef} repasswordModel={this.repasswordModel}></ModifyPassword>
+              <ModifyPassword onRef={this.onRef} repasswordModel={this.repasswordModel} ></ModifyPassword>
           </Modal>
           <Modal
             title="文章标签管理"
@@ -472,7 +488,7 @@ class Personal extends React.Component{
             okText='确定'
             cancelText="取消"
           >
-            <ModifyPersonal onRef={this.onRef} ></ModifyPersonal>
+            <ModifyPersonal onRef={this.onRef} initUserInfo = {this.initUserInfo} personInfo={this.personInfo} ></ModifyPersonal>
           </Modal>
         </div>
       );

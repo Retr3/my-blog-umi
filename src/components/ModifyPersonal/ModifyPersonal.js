@@ -4,7 +4,9 @@ import { Form, Input, Select,Row, Col, Button, Icon } from 'antd';
 import cityList from '../../utils/cityList'
 const { Option } = Select;
 let teamId = 0;
-@connect(state=>({}),{
+@connect(state=>({
+  isSuccess: state.appPersonal.isSuccess
+}),{
     updatePersonalInfoFn: payload => ({
         type: "appPersonal/updatePersonalInfoFn",payload
     }),
@@ -12,21 +14,32 @@ let teamId = 0;
 @Form.create()
 class ModifyPersonal extends React.Component{
     state={
-      team: !!JSON.parse(window.localStorage.getItem('userinfo')).team ?JSON.parse(window.localStorage.getItem('userinfo')).team.split(',') :''
+      team: !!JSON.parse(window.localStorage.getItem('userinfo')).team ?JSON.parse(window.localStorage.getItem('userinfo')).team.split(',') :[]
     }
     componentDidMount(){
         this.props.onRef(this);
+        this.props.form.setFieldsValue({
+          teams: []
+        });
+        this.state.team.map(()=>{
+          return this.addTeam();
+        })
     }
     //提交修改
-    submitPersonal = () =>{
+    submitPersonal = async () =>{
         let { form, updatePersonalInfoFn } = this.props;
-        form.validateFields(async(err, values) => {
+        let that = this;
+        await form.validateFields(async(err, values) => {
             if (!err) {
                 console.log('Received values of form: ', values);
                 const {nickname, sign, occupation, company, location, team} = values;
-                const teams = !!teams && teams.length>0?team.filter(item=> !!item):'';
+                const teams = !!team && team.length>0?team.filter(item=> !!item):[];
                 console.log(teams);
-                // await updatePersonalInfoFn({payload:{ nickname, sign, occupation, company, location, team }});
+                await updatePersonalInfoFn({ userinfo: {nickname, sign, occupation, company, location, team:teams.join(',')}, userid: JSON.parse(window.localStorage.getItem('userinfo')).userid });
+                if(that.props.isSuccess){
+                  that.props.initUserInfo();
+                  that.props.personInfo(false);
+                }
             }
         });
     }
@@ -43,9 +56,14 @@ class ModifyPersonal extends React.Component{
     removeTeam = key =>{
       const { form } = this.props;
       const keys = form.getFieldValue('keys');
-      form.setFieldsValue({
-        keys: keys.filter(k => k !== key),
-      });
+      const team = this.state.team.filter((k, i) => i !== key);
+      this.setState({
+        team
+      }, ()=>{
+        form.setFieldsValue({
+          keys: keys.filter(k => k !== key),
+        });
+      })
     }
     render(){
         const { getFieldDecorator, getFieldValue } = this.props.form;
