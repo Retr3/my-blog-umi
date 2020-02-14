@@ -7,9 +7,9 @@ import  Piepercent  from "../../components/Charts/PiePercent";
 
 export default connect(state=>({
     staticInfo:state.appHome.staticList,
+    loginrecord:state.appHome.loginrecord,
     actionInfo:state.appHome.actionInfo,
-    abilityInfo:state.appHomeAbility.chartData,
-    loginRecordInfo:state.appHomeRecord.loginRecordData
+    abilityInfo:state.appHomeAbility.chartData
 }),{
     getActionInfo: () => ({
       type: "appHome/homeInfoFn"
@@ -19,12 +19,9 @@ export default connect(state=>({
     }),
     getAbilityInfo:()=>({
       type: "appHomeAbility/appAbilityFn"
-    }),
-    getRecordInfo:()=>({
-      type: "appHomeRecord/appRecordFn"
     })
   })(
-    function({staticInfo,actionInfo,abilityInfo,loginRecordInfo,getActionInfo,getStaticInfo,getAbilityInfo,getRecordInfo}) {
+    function({staticInfo,actionInfo,abilityInfo,getActionInfo,getStaticInfo,getAbilityInfo,loginrecord}) {
         const listName = ['服务器环境','服务器版本','CPU信息','内存容量'];
         const colorList = ['#40c9c6','#36a3f7','#f4516c','#ffba00'];
         const iconList = ['icon-system','icon-edition','icon-cpu','icon-memory'];
@@ -32,10 +29,14 @@ export default connect(state=>({
         //(待实现)每天0,6,12,18点取一次(定时器)更新abilityInfo
         useEffect(() => {
             getStaticInfo();
-            getActionInfo();
             getAbilityInfo();
-            getRecordInfo();
-          },[getAbilityInfo, getActionInfo, getRecordInfo, getStaticInfo]);
+          },[getAbilityInfo, getStaticInfo]);
+        useEffect(() => {
+          getActionInfo();
+          return ()=>{
+            alert(0);
+          }
+        },[getActionInfo]);
       return (
         <div >
             <Row gutter={[16,16]}>
@@ -68,7 +69,7 @@ export default connect(state=>({
             <Row gutter={[16,16]}>
                 <Col xl={{span:12}} md={{span:24}} xs={{span:24}}>
                      <Card title='7天服务器性能情况' bordered={false}  bodyStyle={{padding:0}}>
-                        {(abilityInfo&& abilityInfo.length>0)?<Chart height={550} data={abilityInfo} className={styles['chart-item']}>
+                        {(abilityInfo&& abilityInfo.length>0)?<Chart height={550} forceFit={true} data={abilityInfo} className={styles['chart-item']}>
                         <Legend />
                         <Axis name="day" />
                         <Axis
@@ -105,10 +106,10 @@ export default connect(state=>({
                   <Card title='当前使用情况' bordered={false}  bodyStyle={{padding:0}}>
                     { !!Object.keys(actionInfo).length ?<Row gutter={[12,12]}>
                       <Col  xl={{span:12}} md={{span:24}} xs={{span:24}}>
-                        <Piepercent pieData={actionInfo.memDv} pietitle={'内存使用率'} pieInfo={actionInfo.MemRate} peiheight={268} pieColor={actionInfo.meColor}></Piepercent>
+                        <Piepercent pieData={actionInfo.memDv} pietitle={'内存使用率'} pieInfo={actionInfo.memRate} peiheight={268} pieColor={actionInfo.meColor}></Piepercent>
                       </Col>
                       <Col  xl={{span:12}} md={{span:24}} xs={{span:24}}>
-                        <Piepercent pieData={actionInfo.cpuDv} pietitle={'CPU使用率'} pieInfo={actionInfo.cpuLoad} peiheight={268} pieColor={actionInfo.cpuColor}></Piepercent>
+                        <Piepercent pieData={actionInfo.cpuDv} pietitle={'CPU使用率'} pieInfo={actionInfo.cpuuse} peiheight={268} pieColor={actionInfo.cpuColor}></Piepercent>
                       </Col>
                     </Row>:<Row gutter={[12,12]} style={{height:"268px"}}></Row>}
                     <Row>
@@ -120,7 +121,7 @@ export default connect(state=>({
                                   <div className={`iconfont icon-time2`}></div>
                                 </Col>
                                 <Col span={10}>服务器运行时间</Col>
-                                <Col span={10}>2h</Col>
+                                <Col span={10}>{(actionInfo.uptime/60/60).toFixed(1)+'h'}</Col>
                               </Row>
                             </List.Item>:<List.Item>
                                 <Row className={styles["list-item"]}>
@@ -129,7 +130,7 @@ export default connect(state=>({
                               </List.Item>}
                         </List>
                         <List itemLayout="horizontal">
-                          {(loginRecordInfo && loginRecordInfo.length>0)?loginRecordInfo.map((item,index)=>{
+                          {(!!loginrecord && loginrecord.length>0)?loginrecord.map((item,index)=>{
                               return (
                                 <List.Item key={item.title}>
                                   <Row className={styles["list-item"]} style={{color:`#36a3f7`}}>

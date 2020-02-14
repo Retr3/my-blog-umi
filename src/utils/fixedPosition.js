@@ -1,4 +1,5 @@
 import axios from "axios";
+//获取定位方法
 const key = 'D2YBZ-6ZZ6X-S724L-73AS3-7UFKH-5HBG4';
 export default function getLocation(ip){
     const params = {key};

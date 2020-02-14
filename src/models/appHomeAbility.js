@@ -1,8 +1,8 @@
 import axios from "axios";
 
 function getAbilityInfo(){
-    return axios.get("/api/appHomeAbility").then(res=>{
-        return {data:res.data.data}
+    return axios.get("/api/loadavg").then(res=>{
+        return {data:res.data}
     })
 }
 
@@ -15,7 +15,14 @@ export default {
         *appAbilityFn(obj,{call, put}){
             try{
                 const { data } = yield call(getAbilityInfo);
-                yield put({ type: "abilityInit", ability: data });
+                const newData = [];
+                data.forEach(item=>{
+                    const day = item.date.split(' ')[0].split('-')[1]+'-'+item.date.split(' ')[0].split('-')[2]+'/'+item.date.split(' ')[1]
+                    newData.push({day,type:'内存使用率',percentage:Number(item.memoryper_forms)},
+                        {day,type:'CPU使用率',percentage:Number(item.cpuper_forms)})
+                })
+                console.log(newData);
+                yield put({ type: "abilityInit", newData });
             }catch(err){
                 console.log(err);
             }
@@ -23,7 +30,7 @@ export default {
     },
     reducers:{
         abilityInit(state,action){
-            return {chartData:action.ability.chartData};
+            return {chartData:action.newData};
         }
     }
 }

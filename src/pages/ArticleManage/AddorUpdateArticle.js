@@ -24,17 +24,6 @@ const options = {
 const { Option } = Select;
 const { confirm } = Modal;
 const imgTypeList = ['image/jpeg','image/jpg','image/png','image/gif','image/bmp']
-function beforeUpload(file) {
-    const isImg = !!(imgTypeList.indexOf(file.type)>-1);
-    if (!isImg) {
-      message.warning('请上传正确的图片格式');
-    }
-    const isLt3M = file.size / 1024 / 1024 < 3;
-    if (!isLt3M) {
-      message.warning('请上传小于3M的图片');
-    }
-    return isImg && isLt3M;
-  }
 BraftEditor.use(Emoticon(options))
 @connect(state=>({
         articleInfo:state.appArticle.articleInfo,
@@ -44,9 +33,10 @@ BraftEditor.use(Emoticon(options))
         type: "appArticle/getArticleInfoFn",
         articleId
     }),
-    addOrUdpateArticleFn: (articleData,reloadFn) => ({
+    addOrUdpateArticleFn: (articleData,toggleFn, reloadFn) => ({
         type: "appArticle/addOrUdpateArticleFn",
         articleData,
+        toggleFn,
         reloadFn
     }),
     resetArticleInfoFn: ()=> ({
@@ -65,7 +55,7 @@ class AddorUpdateArticle extends React.Component {
         fileList: [],
         previewVisible: false,
         previewImage: '',//返回图片地址
-        imgName:''//图片名
+        imgId:''//图片名
     }
     async componentDidMount(){
         const { updateId, getArticleInfoFn, getTagsFn } = this.props;
@@ -74,15 +64,15 @@ class AddorUpdateArticle extends React.Component {
         if(!!updateId){
             await getArticleInfoFn(updateId);
             this.setState({
+                imgId: this.props.articleInfo.cover_img_id,
                 fileList:[{
-                        name: this.props.articleInfo.img_name,
+                        name: this.props.articleInfo.article_title+'封面',
                         uid:'-1',
                         status: 'done',
-                        url: this.props.articleInfo.img_path,
-                        thumbUrl: this.props.articleInfo.img_path,
+                        url: 'http://127.0.0.1:7070'+this.props.articleInfo.imagepath,
+                        thumbUrl: 'http://127.0.0.1:7070'+this.props.articleInfo.imagepath,
                     }],
-                previewImage: this.props.articleInfo.img_path,//预览图地址
-                imgName:this.props.articleInfo.img_name
+                previewImage: this.props.articleInfo.imagepath,//预览图地址
             })
          }
     }
@@ -107,6 +97,15 @@ class AddorUpdateArticle extends React.Component {
             });
         }
     }
+    tagsValueToId = (list,tagsInfo) =>{
+     const tags = list.map(item=>{
+       if(typeof item === "number"){
+          return item;
+       }
+          return tagsInfo.find(k=>k.content === item).id
+     })
+     return tags.join(',')
+    }
     //提交
     submitContent =  async (e) => {
         e.preventDefault();
@@ -119,23 +118,46 @@ class AddorUpdateArticle extends React.Component {
                 //具体相关展示与数据转换方法参考https://www.yuque.com/braft-editor/be/lzwpnr
                 const htmlContent = this.state.editorState.toHTML();
                 const rawJSON = this.state.editorState.toRAW(true);
+                const { updateId, tagsInfo } = this.props;
                 // console.log('json',rawJSON);
                 // console.log('htmlis '+htmlContent);
+                let tags = [];
+                // if(!!updateId){
+                //   tags = this.tagsValueToId(values.article_tags,tagsInfo);
+                // }else{
+                //   tags = values.article_tags.join(',');
+                // }
+                tags = this.tagsValueToId(values.article_tags,tagsInfo);
+                console.log(tags);
                 this.props.addOrUdpateArticleFn({
                     id:this.props.updateId,
                     article_title:values.article_title,
-                    article_tags:values.article_tags,
-                    img_name:this.state.imgName,
-                    img_path:this.state.previewImage,
-                    braft_row:rawJSON,
-                    braft_html:htmlContent},this.props.toggleArticle);
+                    tags,
+                    cover_img_id:this.state.imgId,
+                    //img_path:this.state.previewImage,
+                    articlecontentjson:JSON.stringify(rawJSON),
+                    articlecontenthtml:htmlContent},this.props.toggleArticle,this.props.getArticleListFn);
             }
         })
         //const result = await saveEditorContent(htmlContent)
     }
     handleEditorChange = (editorState) => {
-    this.setState({ editorState })
-    console.log(editorState.toHTML())
+      this.setState({ editorState })
+      console.log(editorState.toHTML())
+    }
+    beforeUpload = file => {
+      const isImg = !!(imgTypeList.indexOf(file.type)>-1);
+      if (!isImg) {
+        message.warning('请上传正确的图片格式');
+      }
+      const isLt5M = file.size / 1024 / 1024 < 5;
+      if (!isLt5M) {
+        message.warning('请上传小于5M的图片');
+      }
+      this.setState({
+        fileList: [],
+      })
+      return isImg && isLt5M;
     }
     //上传变化
     uploadHandleChange = info => {
@@ -144,11 +166,16 @@ class AddorUpdateArticle extends React.Component {
           console.log(info.file, info.fileList);
         }
         if (status === 'done') {
-          message.success(`封面上传成功`);
-          this.setState({
-            previewImage:info.file.response.url,
-            imgName:info.file.response.name
-          })
+          if(info.file.response.code === 0){
+            this.setState({
+              previewImage:info.file.response.url,
+              imgId:info.file.response.id
+            })
+            message.success(`封面上传成功`);
+          }else{
+            message.error(`封面上传失败`);
+          }
+          return ;
         } else if (status === 'error') {
           message.error(`封面上传失败`);
         }
@@ -163,7 +190,14 @@ class AddorUpdateArticle extends React.Component {
             previewVisible
         })
     }
+    //删除封面
+    coverRemove = () =>{
+      this.setState({
+        imgId:''
+    })
+    }
     render() {
+        const headers = window.localStorage.getItem("token")?{"Authorization": `Bearer ${window.localStorage.getItem("token")}`}:'';
         const { editorState } = this.state
         const extendControls = [
             {
@@ -230,12 +264,14 @@ class AddorUpdateArticle extends React.Component {
                                 })(
                                     <Upload
                                     accept=".jpeg,.jpg,.png,.gif,.bmp"
-                                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                                    action = '/api/imagelist'
+                                    headers = {headers}
                                     listType="picture"
-                                    beforeUpload={beforeUpload}
+                                    beforeUpload={this.beforeUpload}
                                     fileList={this.state.fileList}
                                     onPreview={this.coverPreview}
                                     onChange={this.uploadHandleChange}
+                                    onRemove={this.coverRemove}
                                     showUploadList={{showPreviewIcon:true,showRemoveIcon: true,showDownloadIcon: false}}
                                   >
                                     {this.state.fileList.length >0 ? null : <Button>
@@ -248,7 +284,7 @@ class AddorUpdateArticle extends React.Component {
                         <Col span={24}>
                             <Form.Item label="文章标签">
                                 {getFieldDecorator('article_tags', {
-                                    initialValue:articleInfo.article_tags,
+                                    initialValue:articleInfo.tagsList,
                                     validateFirst:true,
                                     rules: [{required: true,message: '请最少选择一个标签'},{
                                             validator: (_, value, callback) => {
@@ -266,7 +302,7 @@ class AddorUpdateArticle extends React.Component {
                                         placeholder="请选择一个或多个标签"
                                     >
                                         {tagsInfo.map((item, i) =>{
-                                            return <Option key={'stag'+i} value={item.content}>{item.content}</Option>
+                                            return <Option key={'stag'+i} value={item.id}>{item.content}</Option>
                                         })}
                                     </Select>
                                 )}
@@ -275,7 +311,7 @@ class AddorUpdateArticle extends React.Component {
                         <Col span={24}>
                             <Form.Item label="文章正文">
                                 {getFieldDecorator('content', {
-                                    initialValue:articleInfo.braft_row?BraftEditor.createEditorState(articleInfo.braft_row):null,
+                                    initialValue:articleInfo.articlecontentjson?BraftEditor.createEditorState(JSON.parse(articleInfo.articlecontentjson)):null,
                                     validateTrigger:'onBlur',
                                     rules: [{
                                         required: true,
@@ -310,7 +346,7 @@ class AddorUpdateArticle extends React.Component {
                     </Form>
                     </Row>
                 <Modal closable={false} visible={this.state.previewVisible} footer={null} onCancel={this.coverPreview}>
-                    <img alt="example" style={{ width: '100%' }} src={this.state.previewImage} />
+                    <img alt="example" style={{ width: '100%' }} src={'http://127.0.0.1:7070'+this.state.previewImage} />
                 </Modal>
                 <BackTop className={styles['article-backup']} visibilityHeight={200} />
             </div>)

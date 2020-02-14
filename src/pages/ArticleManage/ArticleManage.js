@@ -2,18 +2,20 @@ import React from 'react';
 import { connect } from 'dva';
 import styles from './ArticleManage.css';
 import AddorUpdateArticle from './AddorUpdateArticle';
-import {Icon, Button, Input, Row, Col, Card, Modal, Tooltip, Tag } from 'antd';
+import {Icon, Button, Input, Row, Col, Card, Modal, Tooltip, Tag, Empty } from 'antd';
+import getTags from '../../utils/getTagsFn.js'
 const { Meta } = Card;
 const { confirm } = Modal;
 const { Search } = Input;
 
 @connect(state=>({articleList:state.appArticleList.articleList}),{
-  getAppArticleList: () => ({
-    type: "appArticleList/getAppArticleListFn"
+  getAppArticleList: articleName => ({
+    type: "appArticleList/getAppArticleListFn", articleName
   }),
-  delArticle: articleId =>({
+  delArticle: (articleId, reloadFn) =>({
     type: "appArticleList/delArticleFn",
-    articleId
+    articleId,
+    reloadFn
   })
 })
 class ArticleManage extends React.Component {
@@ -25,11 +27,11 @@ class ArticleManage extends React.Component {
     articleListAction:''
   }
   componentDidMount(){
-    this.getArticleListFn();
+    this.getArticleListFn('');
   }
   //查询列表数据
-  getArticleListFn= async () =>{
-    await this.props.getAppArticleList();
+  getArticleListFn= async value =>{
+    await this.props.getAppArticleList(value);
     this.setState({
       articleListAction:this.props.articleList
     })
@@ -42,13 +44,15 @@ class ArticleManage extends React.Component {
       okType: 'danger',
       cancelText: '取消',
       onOk() {
-        that.props.delArticle(articleId);
+        that.props.delArticle(articleId,that.getArticleListFn);
       }
     });
   }
   //文章详情信息
-  detailsModel = item =>{
+  detailsModel = async item =>{
     let visibleMoreInfo = !this.state.visibleMoreInfo;
+    const tagsInfoList = await getTags(item.tags);
+    item.tagsInfoList = !!tagsInfoList?tagsInfoList:[];
     this.setState({
       articleDetails:item
     },()=>{
@@ -58,7 +62,7 @@ class ArticleManage extends React.Component {
     })
   }
   //页面切换
-  toggleArticle = articleId =>{
+  toggleArticle = async articleId =>{
     let that = this;
     let updateId = !!articleId?articleId:'';
     let isShowAddItem = !that.state.isShowAddItem;
@@ -86,12 +90,13 @@ class ArticleManage extends React.Component {
   }
   //查询方法
   searchArticle = value =>{
-    !!value?this.searchArticleFn(value):this.getArticleListFn();
+    this.getArticleListFn(value);
   }
-  searchArticleFn = value =>{
-    let articleListAction = this.props.articleList.filter(item => item.article_title.indexOf(value)>-1 );
-    this.setState({articleListAction});
-  }
+  // searchArticleFn = value =>{
+  //   let articleListAction = this.props.articleList.filter(item => item.article_title.indexOf(value)>-1 );
+
+  //   this.setState({articleListAction});
+  // }
   render() {
     const { articleDetails,articleListAction } = this.state;
     return (
@@ -115,14 +120,14 @@ class ArticleManage extends React.Component {
             </Col>
           </Row>
           <Row gutter={[16,16]}>
-            {articleListAction?articleListAction.map((item,index)=>{
+            {!!articleListAction&&articleListAction.length>0?articleListAction.map((item,index)=>{
                 return <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
                   <Card
                     hoverable
                     cover={
                       <img
                         alt="cover"
-                        src={item.cover_path}
+                        src={'http://127.0.0.1:7070'+item.imagepath}
                       />
                     }
                     actions={[
@@ -139,14 +144,14 @@ class ArticleManage extends React.Component {
                   >
                     <Meta
                       title={item.article_title}
-                      description={item.create_time+'创建'}
+                      description={item.created_at+'创建'}
                     />
                   </Card>
                 </Col>
-            }):''}
+            }):<Empty style={{'marginTop':'200px'}} description={'暂无文章信息'}/>}
           </Row>
         </div>:<div>
-            <AddorUpdateArticle toggleArticle={this.toggleArticle} updateId={this.state.updateId}></AddorUpdateArticle>
+            <AddorUpdateArticle toggleArticle={this.toggleArticle} getArticleListFn={this.getArticleListFn} updateId={this.state.updateId}></AddorUpdateArticle>
           </div>}
          <Modal
           title="文章信息"
@@ -154,17 +159,17 @@ class ArticleManage extends React.Component {
           visible={this.state.visibleMoreInfo}
           destroyOnClose={true}
           footer={[
-            <Button key="primary" type="primary" onClick={()=>this.detailsModel('')}>确定</Button>
+            <Button key="primary" type="primary" onClick={()=>this.setState({visibleMoreInfo:false})}>确定</Button>
           ]}
         >{(!!articleDetails)?
           <div>
             <p><span style={{marginRight:'10px'}}>文章名:</span>{ articleDetails.article_title }</p>
-            <p><span style={{marginRight:'10px'}}>作者:</span>{ articleDetails.article_user }</p>
-            <p><span style={{marginRight:'10px'}}>文章创建时间:</span>{ articleDetails.create_time }</p>
-            <p><span style={{marginRight:'10px'}}>最后更新时间:</span>{ articleDetails.update_time }</p>
+            <p><span style={{marginRight:'10px'}}>作者:</span>{ articleDetails.username }</p>
+            <p><span style={{marginRight:'10px'}}>文章创建时间:</span>{ articleDetails.created_at }</p>
+            <p><span style={{marginRight:'10px'}}>最后更新时间:</span>{ articleDetails.updated_at }</p>
             <div><span style={{marginRight:'10px'}}>标签:</span>
-              { articleDetails.tags.map((item,index)=>{
-              return <Tag key={'tags'+index} color="red">{item}</Tag>
+              { articleDetails.tagsInfoList.map((item,index)=>{
+              return <Tag key={'tags'+index} color="red">{item.content}</Tag>
             })}
             </div>
           </div>:''}

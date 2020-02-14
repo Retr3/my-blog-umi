@@ -1,20 +1,21 @@
 import axios from "axios";
 import { DataView } from "@antv/data-set";
 function appHomeStatic(){
-    return axios.get("/api/appHomeStaticInfo").then(res=>{
-        return {data:res.data.data}
+    return axios.get("/api/oslist").then(res=>{
+        return {data:res.data}
     })
 }
 function appHome(){
-    return axios.get("/api/appHomeInfo").then(res=>{
-        return {data:res.data.data}
+    return axios.get("/api/actionoslist").then(res=>{
+        return {data:res.data}
     })
 }
 export default {
     namespace:"appHome",
     state:{
         staticList:[],
-        actionInfo:{}
+        actionInfo:{},
+        loginrecord:[]
     },
     effects:{
         *homeStaticInfoFn(obj,{call, put}){
@@ -39,17 +40,19 @@ export default {
           let staticList = [];
           staticList.push(`${action.staticInfo.type} ${action.staticInfo.arch} `);
           staticList.push(`${action.staticInfo.release}`); 
-          staticList.push(`${action.staticInfo.cpusmodel} ${action.staticInfo.cpuslength}核`);
+          staticList.push(`${action.staticInfo.cpus.split(' ')[action.staticInfo.cpus.split(' ').length-1]} ${action.staticInfo.cpucores}核`);
           staticList.push(action.staticInfo.totalmem);
-          return {...state,staticList};
+          let loginrecord = action.staticInfo.loginrecord;
+          return {...state, staticList, loginrecord};
         },
         actionInit(state, action) {
             const memDv = new DataView();
             const cpuDv = new DataView();
+            console.log(action.actionInfo);
             let memData = [
                 {
                 item: "内存使用",
-                value: parseInt(action.actionInfo.useMem)
+                value: parseInt(action.actionInfo.usemem)
                 },
                 {
                 item: "内存空闲",
@@ -58,11 +61,11 @@ export default {
             let cpuLoadData = [
                 {
                 item: "CPU使用",
-                value: parseInt(action.actionInfo.cpuLoad)
+                value: parseInt(action.actionInfo.cpuuse)
                 },
                 {
                 item: "CPU空闲",
-                value: 100-parseInt(action.actionInfo.cpuLoad)
+                value: parseInt(action.actionInfo.cpufree)
                 }]    
             memDv.source(memData).transform({
                 type: "percent",
@@ -76,9 +79,10 @@ export default {
                 dimension: "item",
                 as: "percent"
             });
-            let cpuColor = action.actionInfo.cpuLoad>50?(action.actionInfo.cpuLoad>80?'#d6262f':'#ffc53d'):"#16e002";
-            let meColor = action.actionInfo.MemRate>50?(action.actionInfo.MemRate>80?'#d6262f':'#ffc53d'):"#16e002";
-            let actionInfo = {...action.actionInfo,memDv,cpuDv,cpuColor,meColor};
+            const memRate = Number((action.actionInfo.usemem/(action.actionInfo.freemem + action.actionInfo.usemem)*100).toFixed(2));
+            let cpuColor = action.actionInfo.cpuuse>50?(action.actionInfo.cpuuse>80?'#d6262f':'#ffc53d'):"#16e002";
+            let meColor = memRate>50?(memRate>80?'#d6262f':'#ffc53d'):"#16e002";
+            let actionInfo = {...action.actionInfo,memDv,cpuDv,cpuColor,meColor, memRate};
             let newActionInfo = {
                 staticList:state.staticList,
                 actionInfo

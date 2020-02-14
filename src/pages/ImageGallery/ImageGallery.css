@@ -8,3 +8,39 @@
     margin-bottom:8px;
     padding:0 4px;
   }
+  .upload-progress{
+    margin-bottom: 20px!important;
+  }
+  .spin-style{
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
+  }
+  .my-upload {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    color: rgba(0,0,0,0.65);
+    font-size: 14px;
+    font-variant: tabular-nums;
+    line-height: 1.5;
+    list-style: none;
+    font-feature-settings: 'tnum';
+    outline: 0;
+  }
+  .my-upload-drag-icon{
+    color: #40a9ff;
+    font-size: 48px;
+    margin-bottom: 20px;
+  }
+  .my-upload-text{
+      margin: 0 0 4px;
+      color: rgba(0,0,0,0.85);
+      font-size: 16px;
+  }
+  .my-upload-hint{
+      color: rgba(0,0,0,0.45);
+      font-size: 14px;
+  }
