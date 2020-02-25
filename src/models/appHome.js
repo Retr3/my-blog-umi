@@ -26,10 +26,10 @@ export default {
 
             }
         },
-        *homeInfoFn(obj,{call, put}){
+        *homeInfoFn({ msg },{call, put}){
             try{
-                const { data } = yield call(appHome);
-                yield put({ type: "actionInit", actionInfo: data });
+                //const { data } = yield call(appHome);
+                yield put({ type: "actionInit", actionInfo: msg });
             }catch(err){
 
             }
@@ -85,6 +85,7 @@ export default {
             let actionInfo = {...action.actionInfo,memDv,cpuDv,cpuColor,meColor, memRate};
             let newActionInfo = {
                 staticList:state.staticList,
+                loginrecord:state.loginrecord,
                 actionInfo
             }
             return newActionInfo;

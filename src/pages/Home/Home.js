@@ -1,18 +1,18 @@
-import { Row, Col, Card, List, Skeleton } from 'antd'
+import { Row, Col, Card, List, Skeleton, Spin, Icon } from 'antd'
 import styles from './Home.css';
 import { connect } from 'dva';
 import { useEffect } from "react";
 import { Chart, Axis, Geom, Tooltip, Legend } from 'bizcharts';
 import  Piepercent  from "../../components/Charts/PiePercent";
-
+import io from 'socket.io-client';
 export default connect(state=>({
     staticInfo:state.appHome.staticList,
     loginrecord:state.appHome.loginrecord,
     actionInfo:state.appHome.actionInfo,
     abilityInfo:state.appHomeAbility.chartData
 }),{
-    getActionInfo: () => ({
-      type: "appHome/homeInfoFn"
+    getActionInfo: msg => ({
+      type: "appHome/homeInfoFn",msg
     }),
     getStaticInfo: () => ({
       type: "appHome/homeStaticInfoFn"
@@ -32,9 +32,31 @@ export default connect(state=>({
             getAbilityInfo();
           },[getAbilityInfo, getStaticInfo]);
         useEffect(() => {
-          getActionInfo();
+          const socket = io('http://127.0.0.1:7070/actionlist', {
+            query: {
+              token: `Bearer ${window.localStorage.getItem("token")}`
+            }
+          });
+          socket.on('connect', () => {
+            console.log('connect');
+            socket.emit('actionlist');
+          });
+          socket.on('actionlist',msg=>{
+            getActionInfo(msg);
+          })
+          // 系统事件
+          socket.on('disconnect', msg => {
+            console.log('断开连接', msg);
+          });
+          socket.on('disconnecting', () => {
+            console.log('#disconnecting');
+          });
+          socket.on('error', () => {
+            console.log('error');
+          });
+          window.socket = socket;
           return ()=>{
-            alert(0);
+            window.socket.close();
           }
         },[getActionInfo]);
       return (
@@ -111,7 +133,9 @@ export default connect(state=>({
                       <Col  xl={{span:12}} md={{span:24}} xs={{span:24}}>
                         <Piepercent pieData={actionInfo.cpuDv} pietitle={'CPU使用率'} pieInfo={actionInfo.cpuuse} peiheight={268} pieColor={actionInfo.cpuColor}></Piepercent>
                       </Col>
-                    </Row>:<Row gutter={[12,12]} style={{height:"268px"}}></Row>}
+                    </Row>:<Row className={styles["spin"]} gutter={[12,12]} style={{height:"268px"}}>
+                        <Spin size="large" tip="正在获取服务器性能..." indicator={<Icon type="loading" style={{ fontSize: 32 }} spin />}></Spin>
+                      </Row>}
                     <Row>
                       <Col span={24}>
                       <List style={{borderBottom:"1px solid #e8e8e8"}}>
