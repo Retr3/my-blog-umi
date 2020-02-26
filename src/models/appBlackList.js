@@ -65,6 +65,27 @@ export default {
                 notification.error({message: '黑名单添加异常',duration:1});
             }
         },
+        *addBlackListForVisitFn({ip, location},{call,put}){
+            try{
+                let newLocation = !!location ?location:'无定位';
+                const { code, message } = yield call(addBlackListInfo,ip,newLocation);
+                switch (code) {
+                    case 0:
+                      notification.success({message, duration:1});
+                      yield put({ type: "getBlackListFn"});
+                      break;
+                    case -1:
+                      notification.warning({message, duration:1});
+                      break;
+                    default:
+                      notification.error({message, duration:1});
+                      break;
+                }
+            }catch(err){
+                console.log(err);
+                notification.error({message: '黑名单添加异常',duration:1});
+            }
+        },
         *delBlackListInfoFn({ip},{call,put}){
             try{
                 const { code, message } = yield call(delBlackListInfo,ip);

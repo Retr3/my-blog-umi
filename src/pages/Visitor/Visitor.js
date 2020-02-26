@@ -28,7 +28,7 @@ const displayClick ={
     type: "appBlackList/getBlackListFn"
   }),
   addBlackListInfoFn: (ip,location) =>({
-    type: "appBlackList/addBlackListInfoFn",ip,location
+    type: "appBlackList/addBlackListForVisitFn",ip,location
   }),
   delBlackListInfoFn: ip =>({
     type: "appBlackList/delBlackListInfoFn",ip
@@ -74,26 +74,26 @@ class Visitor extends React.Component{
   loginColumns = [
     {
       title: '用户',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'username',
+      key: 'username',
       ellipsis: true,
       width:'20%'
     },{
       title: '访问时间',
-      dataIndex: 'visit_time',
-      key: 'visit_time',
+      dataIndex: 'login_time',
+      key: 'login_time',
       ellipsis: true,
       width:'25%'
     },{
       title: '位置',
-      dataIndex: 'location',
-      key: 'location',
+      dataIndex: 'login_place',
+      key: 'login_place',
       ellipsis: true,
       width:'15%'
     },{
       title: 'IP地址',
-      dataIndex: 'ip',
-      key: 'ip',
+      dataIndex: 'login_ip',
+      key: 'login_ip',
       ellipsis: true,
       width:'20%'
     },{
@@ -109,10 +109,10 @@ class Visitor extends React.Component{
       render: (text, record) => (
         <span>
           {record.blackFlag?
-          <span style={this.state.loading?displayClick:{}} className={styles['icon-action']}  onClick={()=>this.state.loading?"":this.delBlackList(record.ip)}>
+          <span style={this.state.loading?displayClick:{}} className={styles['icon-action']}  onClick={()=>this.state.loading?"":this.delBlackList(record.login_ip)}>
             <i className="iconfont icon-blacklist"></i>&nbsp;取消拉黑
           </span>:
-          <span style={this.state.loading?displayClick:{}} className={styles['icon-action']}  onClick={()=>this.state.loading?'':this.addBlackList(record.ip)}>
+          <span style={this.state.loading?displayClick:{}} className={styles['icon-action']}  onClick={()=>this.state.loading?'':this.addBlackList(record.login_ip, record.login_place)}>
             <i className="iconfont icon-blacklist"></i>&nbsp;加入黑名单
           </span>}
         </span>
@@ -127,10 +127,10 @@ class Visitor extends React.Component{
   }
   async componentDidMount(){
     const {getShowVisitorInfoFn,getLoginVisitorInfoFn,getBlackListFn,getVisitorStaticInfoFn} = this.props;
-    await getVisitorStaticInfoFn();
     await getBlackListFn();
     await getShowVisitorInfoFn();
-    getLoginVisitorInfoFn();
+    await getLoginVisitorInfoFn();
+    getVisitorStaticInfoFn();
   }
   delBlackList = async key => {
     this.setState({
@@ -159,13 +159,13 @@ class Visitor extends React.Component{
             <Card bordered={false} className={styles['visitor-titlepanel']}>
               <Row>
                 <Col span={8}>
-                  <Statistic valueStyle={{ color: '#1890ff' }} className={styles['title-card']} title="今日访问次数" value={staticData?staticData.todayVisitor:0} prefix={<Icon type="user" />} />
+                  <Statistic valueStyle={{ color: '#1890ff' }} className={styles['title-card']} title="今日访问次数" value={staticData?staticData.dayCount:0} prefix={<Icon type="user" />} />
                 </Col>
                 <Col span={8}>
-                    <Statistic valueStyle={{ color: '#1890ff' }} className={styles['title-card']} title="本周访问次数" value={staticData?staticData.weekVisitor:0} prefix={<Icon type="team" />} />
+                    <Statistic valueStyle={{ color: '#1890ff' }} className={styles['title-card']} title="本周访问次数" value={staticData?staticData.weekCount:0} prefix={<Icon type="team" />} />
                 </Col>
                 <Col span={8}>
-                    <Statistic valueStyle={{ color: '#1890ff' }} style={{textAlign:'center'}} title="累计访问次数" value={staticData?staticData.totalVisitor:0} prefix={<Icon type="pie-chart" theme="filled" />} />
+                    <Statistic valueStyle={{ color: '#1890ff' }} style={{textAlign:'center'}} title="累计访问次数" value={staticData?staticData.totalCount:0} prefix={<Icon type="pie-chart" theme="filled" />} />
                 </Col>
               </Row>
             </Card>
@@ -181,9 +181,9 @@ class Visitor extends React.Component{
                  <Table 
                     loading={false}
                     columns={this.columns} 
-                    dataSource={showVisitorInfo?showVisitorInfo.map(item=>{
+                    dataSource={showVisitorInfo?showVisitorInfo.map((item, index)=>{
                       let blackFlag = !!blackList.find(value=>value.ip===item.ip)
-                      return {...item,blackFlag}
+                      return {...item,blackFlag, key:('visit'+index)}
                     }):[]} 
                     pagination={this.pagination}
                   />
@@ -195,9 +195,9 @@ class Visitor extends React.Component{
                   <Table 
                     
                     columns={this.loginColumns} 
-                    dataSource={loginVisitorInfo?loginVisitorInfo.map(item=>{
-                      let blackFlag = !!blackList.find(value=>value.ip===item.ip)
-                      return {...item,blackFlag}
+                    dataSource={loginVisitorInfo?loginVisitorInfo.map((item, index)=>{
+                      let blackFlag = !!blackList.find(value=>value.ip===item.login_ip)
+                      return {...item,blackFlag, key:('login'+index)}
                     }):[]} 
                     pagination={this.pagination}
                   />

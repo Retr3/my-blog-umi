@@ -2,20 +2,20 @@ import axios from "axios";
 import { message } from 'antd';
 //获取前台访客信息表
 function getShowVisitorInfo(){
-    return axios.get("/api/getShowVisitorInfo").then(res=>{
-        return {listData:res.data.data};
+    return axios.get("/api/visitor").then(res=>{
+        return {listData:res.data};
     });
 }
 //获取后台登录信息表
 function getLoginVisitorInfo(){
-    return axios.get('/api/getLoginVisitorInfo').then(res=>{
-        return {listData:res.data.data};
+    return axios.get('/api/loginrecord').then(res=>{
+        return {listData:res.data};
     });
 }
 //获取静态数据
 function getVisitorStaticInfo(){
-    return axios.get('/api/getVisitorStaticInfo').then(res=>{
-        return {staticData:res.data.data}
+    return axios.get('/api/visitorstatic').then(res=>{
+        return {staticData:res.data}
     });
 }
 export default {
