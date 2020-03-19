@@ -74,7 +74,8 @@ class AppLoginForm extends React.Component {
   };
   //注册
   register = () => {
-    this.props.switchShowBox('register')
+    this.props.switchShowBox('register');
+    this.refs.verification.state.value="";
     setTimeout(() => this.props.form.resetFields(), 500)
   }
   render() {
@@ -138,6 +139,7 @@ class AppLoginForm extends React.Component {
                         onFocus={() => this.setState({focusItem: 2})}
                         onBlur={() => this.setState({focusItem: -1})}
                         maxLength={4}
+                        ref={'verification'}
                         placeholder='验证码'
                         addonBefore={<span className='iconfont icon-vercode'
                                           style={focusItem === 2 ? styles.focus : {}}/>}/>

@@ -39,7 +39,7 @@ function loginRecord(payload){
   })
 }
 function validateip(ip){
-  return axios.get(`/api/validateip/${ip}`).then(res=>{
+  return axios.get(`/api/validateip`,{params:{ip}}).then(res=>{
     return { isBlack: res.data.isBlack }
   })
 }

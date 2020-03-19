@@ -64,3 +64,10 @@
     align-items: center;
     justify-content: center;
 }
+.chart-empty{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: column;
+    height:100%;
+}

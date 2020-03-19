@@ -1,4 +1,4 @@
-import { Row, Col, Card, List, Skeleton, Spin, Icon } from 'antd'
+import { Row, Col, Card, List, Skeleton, Spin, Icon, Empty } from 'antd'
 import styles from './Home.css';
 import { connect } from 'dva';
 import { useEffect } from "react";
@@ -121,7 +121,7 @@ export default connect(state=>({
                             lineWidth: 1
                           }}
                         />
-                        </Chart>:<div className={styles['chart-item']}><div  style={{height:'559px'}}></div></div>}
+                        </Chart>:<div className={styles['chart-item']}><div  style={{height:'559px'}}><Empty className={styles['chart-empty']} description={'暂时还没有足够的数据进行展示'}/></div></div>}
                      </Card>
                 </Col>
                 <Col xl={{span:12}} md={{span:24}} xs={{span:24}}>
@@ -145,7 +145,7 @@ export default connect(state=>({
                                   <div className={`iconfont icon-time2`}></div>
                                 </Col>
                                 <Col span={10}>服务器运行时间</Col>
-                                <Col span={10}>{(actionInfo.uptime/60/60).toFixed(1)+'h'}</Col>
+                                <Col span={10}>{(!!actionInfo && actionInfo.uptime>0)?(actionInfo.uptime/60/60).toFixed(1)+'h':'0'}</Col>
                               </Row>
                             </List.Item>:<List.Item>
                                 <Row className={styles["list-item"]}>
