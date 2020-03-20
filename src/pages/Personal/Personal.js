@@ -9,7 +9,8 @@ import ModifyPersonal from '../../components/ModifyPersonal/Modifypersonal'
 import { isIp } from '../../utils/validator'
 import loadImgAsync from '../../utils/imageLoad'
 import copy from 'copy-to-clipboard';
-const { Paragraph } = Typography;
+import coverImg from '../../assets/images/cover.jpg';
+import avatarImg from '../../assets/images/avatar.jpg';
 const { TabPane } = Tabs;
 const imgTypeList = ['image/jpeg','image/jpg','image/png','image/gif','image/bmp'];
 @connect(state=>({
@@ -100,7 +101,7 @@ class Personal extends React.Component{
   componentDidMount(){
     this.props.getBlackListFn();
     this.initUserInfo();
-    loadImgAsync('https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png').then(url=>{
+    loadImgAsync(coverImg).then(url=>{
       this.setState({
         avatarLoad:false
       })
@@ -341,14 +342,14 @@ class Personal extends React.Component{
           <Row gutter={[16,30]}>
             <Col span={8}>
               <Card  
-                cover={avatarLoad?<div className={styles['avatar-img']}><Spin /></div>:<img style={{height:'200px'}} alt="example" src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"/>}
+                cover={avatarLoad?<div className={styles['avatar-img']}><Spin /></div>:<img style={{height:'200px'}} alt="example" src={coverImg}/>}
                 className={styles['panel-body']}>
                   <div className={styles['avatar-head']}>
                     <PanThumb 
                       width="100px" 
                       height='100px' 
                       zIndex='1' 
-                      imgUrl={!!avatarUrl?"http://127.0.0.1:7070"+avatarUrl:'https://wpimg.wallstcn.com/577965b9-bb9e-4e02-9f0c-095b41417191'}
+                      imgUrl={!!avatarUrl?"http://127.0.0.1:7070"+avatarUrl:avatarImg}
                       >
                       <div id="personal-upload" className={styles['avatar-upload']}>
                         <Upload 

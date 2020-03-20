@@ -44,9 +44,21 @@
 }
 #login-page .showBox{
   transform:rotateY(0deg);
+  opacity: 1;
+  animation: changeBox1 .5s;
 }
 #login-page .hiddenBox{
   transform:rotateY(180deg);
+  opacity: 0;
+  animation: changeBox .5s;
+}
+@keyframes changeBox {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes changeBox1 {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
 }
 #login-page .loginBtn{
   padding: 10px 30px;
