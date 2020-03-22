@@ -45,7 +45,7 @@ export default {
           if(locationIp){
             const footprint = yield getFootprint(locationIp);
             loginIp = locationIp;
-            loginPlace = !!footprint? footprint.ad_info.nation+footprint.ad_info.province+footprint.ad_info.city : '无定位';
+            loginPlace = !!footprint? footprint : '无定位';
           }
           const { isBlack } = yield call(validateip,loginIp);
           if(!isBlack){

@@ -46,7 +46,7 @@ export default {
                 let location = '无定位';
                 if( fixIp ){
                   const footprint = yield getFootprint(fixIp);
-                  location = !!footprint? footprint.ad_info.nation+footprint.ad_info.province+footprint.ad_info.city : '无定位';
+                  location = !!footprint? footprint : '无定位';
                 }
                 const { code, message } = yield call(addBlackListInfo,ip,location);
                 switch (code) {
