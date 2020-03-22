@@ -76,11 +76,11 @@ export default {
   ],
   proxy: {
     "/api": {
-      target: "http://127.0.0.1:7070",
+      target: "https://api.mimiron.cn",
       changeOrigin: true
     },
-    "/ws": {
-      target: "https://apis.map.qq.com",
+    "/ip": {
+      target: "https://bird.ioliu.cn/ip",
       changeOrigin: true
     }
   },

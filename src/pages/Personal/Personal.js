@@ -349,7 +349,7 @@ class Personal extends React.Component{
                       width="100px" 
                       height='100px' 
                       zIndex='1' 
-                      imgUrl={!!avatarUrl?"http://127.0.0.1:7070"+avatarUrl:avatarImg}
+                      imgUrl={!!avatarUrl?"https://api.mimiron.cn"+avatarUrl:avatarImg}
                       >
                       <div id="personal-upload" className={styles['avatar-upload']}>
                         <Upload 

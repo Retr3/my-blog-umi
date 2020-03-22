@@ -28,6 +28,7 @@ const codeMessage = {
     504: "网关超时",
     505: "HTTP 版本不受支持"
 };
+axios.defaults.baseURL = process.env.NODE_ENV==='development'?'':'https://api.mimiron.cn';
 //请求拦截器，如果存在token则将token加入请求头
 axios.interceptors.request.use(
   config => {

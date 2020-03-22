@@ -29,7 +29,7 @@ export default {
                     const newData = data.map(item=>{
                         const style = (item.style ==='one')?'itemOneCol':'itemTwoCol';
                         const size = (item.size ==='1x1')?'1x1':'1x2';
-                        return {id:item.id, groups:item.type.split(','), src: 'http://127.0.0.1:7070'+item.imagepath,size,style}
+                        return {id:item.id, groups:item.type.split(','), src: 'https://api.mimiron.cn'+item.imagepath,size,style}
                     })
                     console.log(newData)
                     yield put({ type: "setGalleryInfo",newData});

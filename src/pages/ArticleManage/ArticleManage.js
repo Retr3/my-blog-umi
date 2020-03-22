@@ -127,7 +127,7 @@ class ArticleManage extends React.Component {
                     cover={
                       <img
                         alt="cover"
-                        src={'http://127.0.0.1:7070'+item.imagepath}
+                        src={'https://api.mimiron.cn'+item.imagepath}
                       />
                     }
                     actions={[

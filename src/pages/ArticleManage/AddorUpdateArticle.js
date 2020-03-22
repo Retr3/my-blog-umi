@@ -69,8 +69,8 @@ class AddorUpdateArticle extends React.Component {
                         name: this.props.articleInfo.article_title+'封面',
                         uid:'-1',
                         status: 'done',
-                        url: 'http://127.0.0.1:7070'+this.props.articleInfo.imagepath,
-                        thumbUrl: 'http://127.0.0.1:7070'+this.props.articleInfo.imagepath,
+                        url: 'https://api.mimiron.cn'+this.props.articleInfo.imagepath,
+                        thumbUrl: 'https://api.mimiron.cn'+this.props.articleInfo.imagepath,
                     }],
                 previewImage: this.props.articleInfo.imagepath,//预览图地址
             })
@@ -346,7 +346,7 @@ class AddorUpdateArticle extends React.Component {
                     </Form>
                     </Row>
                 <Modal closable={false} visible={this.state.previewVisible} footer={null} onCancel={this.coverPreview}>
-                    <img alt="example" style={{ width: '100%' }} src={'http://127.0.0.1:7070'+this.state.previewImage} />
+                    <img alt="example" style={{ width: '100%' }} src={'https://api.mimiron.cn'+this.state.previewImage} />
                 </Modal>
                 <BackTop className={styles['article-backup']} visibilityHeight={200} />
             </div>)

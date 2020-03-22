@@ -2,6 +2,7 @@ import axios from "axios";
 import router from "umi/router";
 import { notification } from "antd";
 import getLocation from '../utils/fixedPosition.js';
+import getFootprint from '../utils/getFootprint.js';
 const userinfo = JSON.parse(localStorage.getItem('userinfo')) || {
     nickname: "",
     username: "",
@@ -19,20 +20,6 @@ function appLogin(payload) {
         return {code: res.data.code,userinfo: res.data.userInfo,msg: res.data.msg, token: res.data.token}
     });
 }
-// function getLocation(){
-//   return axios.get(`/ws/location/v1/ip`,{
-//     params:{
-//       key:ipKey
-//     },
-//     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-//   }).then(res=>{
-//     if(res.data.status === 0){
-//       return res.data.result
-//     }else{
-//       return null
-//     }
-//   })
-// }
 function loginRecord(payload){
   return axios.post("/api/loginrecord", payload).then(res=>{
     return {code: res.data.code, msg: res.data.msg }
@@ -54,11 +41,11 @@ export default {
           //先获取定位，校验是否存在于黑名单
           let loginIp = '0.0.0.0';
           let loginPlace = '无定位';
-          const location = yield getLocation();
-          if(location){
-            const { ip, ad_info } = location;
-            loginIp = ip;
-            loginPlace = ad_info.nation+ad_info.province+ad_info.city;
+          const locationIp = yield getLocation();
+          if(locationIp){
+            const footprint = yield getFootprint(locationIp);
+            loginIp = locationIp;
+            loginPlace = !!footprint? footprint.ad_info.nation+footprint.ad_info.province+footprint.ad_info.city : '无定位';
           }
           const { isBlack } = yield call(validateip,loginIp);
           if(!isBlack){

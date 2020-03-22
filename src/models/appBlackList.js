@@ -1,5 +1,6 @@
 import axios from "axios";
 import getLocation from '../utils/fixedPosition.js';
+import getFootprint from '../utils/getFootprint.js';
 import { message, notification } from 'antd';
 //获取黑名单列表
 function getBlackList(){
@@ -41,11 +42,11 @@ export default {
         },
         *addBlackListInfoFn({ip},{call,put}){
             try{
-                const fixPosition = yield getLocation(ip);
+                const fixIp = yield getLocation();
                 let location = '无定位';
-                if( fixPosition ){
-                  const { ad_info } = fixPosition;
-                  location = ad_info.nation+ad_info.province+ad_info.city;
+                if( fixIp ){
+                  const footprint = yield getFootprint(fixIp);
+                  location = !!footprint? footprint.ad_info.nation+footprint.ad_info.province+footprint.ad_info.city : '无定位';
                 }
                 const { code, message } = yield call(addBlackListInfo,ip,location);
                 switch (code) {
