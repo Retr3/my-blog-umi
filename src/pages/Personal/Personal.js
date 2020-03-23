@@ -355,7 +355,7 @@ class Personal extends React.Component{
                         <Upload 
                           name='file'
                           disabled={loading}
-                          action = '/api/imagelist'
+                          action = {process.env.NODE_ENV==='development'?'/api/imagelist':'https://api.mimiron.cn/api/imagelist'}
                           headers = {headers}
                           accept=".png,.jpg,.jpeg,.bmp,.gif"
                           fileList={this.state.fileList}

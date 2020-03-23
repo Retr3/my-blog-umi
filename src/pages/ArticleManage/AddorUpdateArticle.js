@@ -264,7 +264,7 @@ class AddorUpdateArticle extends React.Component {
                                 })(
                                     <Upload
                                     accept=".jpeg,.jpg,.png,.gif,.bmp"
-                                    action = '/api/imagelist'
+                                    action = {process.env.NODE_ENV==='development'?'/api/imagelist':'https://api.mimiron.cn/api/imagelist'}
                                     headers = {headers}
                                     listType="picture"
                                     beforeUpload={this.beforeUpload}
