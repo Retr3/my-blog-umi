@@ -35,7 +35,7 @@ export default connect(state=>({
             getAbilityInfo();
           },[getAbilityInfo, getStaticInfo]);
         useEffect(() => {
-          const socket = io('http://49.235.45.43:2333/actionlist', {
+          const socket = io('https://api.mimiron.cn/actionlist', {
             query: {
               token: `Bearer ${window.localStorage.getItem("token")}`
             }
