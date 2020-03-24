@@ -32,7 +32,7 @@ class ResumeUpload extends React.Component {
   componentDidMount(){
     this.props.dispatch({type:"appResume/getFileListFn"});
   }
-  beforeUpload = async (file)=>{
+  beforeUpload = file =>{
     const isDocOrPdf = file.type === 'application/msword' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.type === 'application/pdf';
     if (!isDocOrPdf) {
       message.error('请上传doc/docx/pdf文件');
@@ -81,7 +81,8 @@ class ResumeUpload extends React.Component {
           this.setState({
             uploading:false,
             fileList:[],
-            percent:0
+            percent:0,
+            remarks:''
           })
           this.props.dispatch({type:"appResume/getFileListFn"});
         }else{
@@ -90,6 +91,7 @@ class ResumeUpload extends React.Component {
             uploading:false,
             fileList:[],
             percent:0,
+            remarks:'',
             cancelUpload:false
           })
         }
@@ -132,7 +134,8 @@ class ResumeUpload extends React.Component {
     })
     await this.props.dispatch({type:"appResume/deleteFileFn",fileId:id});
     this.setState({
-      deleting:false
+      deleting:false,
+      fileInfo:''
     })
   }
   downloadFile = (path, filename) =>{
@@ -238,6 +241,8 @@ class ResumeUpload extends React.Component {
         <Modal
           title="备注"
           visible={this.state.visible}
+          closable={false}
+          destroyOnClose={true}
           footer={[
             <Button key="submit" type="primary" onClick={this.handleModel}>
               确定

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import styles from './Personal.css';
-import { Upload, Card, Row, Col, Button, Icon, Typography, Divider, Table, Tabs, message, Progress, Modal, Input, List, Avatar,Tooltip, Form, Spin } from 'antd';
+import { Upload, Card, Row, Col, Button, Icon, Divider, Table, Tabs, message, Progress, Modal, Input, List, Avatar,Tooltip, Form, Spin } from 'antd';
 import PanThumb from '../../components/PanThumb/PanThumb'
 import MyTags from '../../components/MyTags/MyTags'
 import ModifyPassword from '../../components/ModifyPassword/ModifyPassword'

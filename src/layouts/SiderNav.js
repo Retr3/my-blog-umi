@@ -121,7 +121,7 @@ class SiderNav extends React.Component{
       <Sider style={{minHeight:'100vh',overflow:'auto'}} trigger={null}  collapsible collapsed={collapsed}>
           <div className={styles['logodom']}>
             <a href="/">
-              <img src={logo} className={styles['logo']}/>
+              <img src={logo} alt="log" className={styles['logo']}/>
               <h1 className={styles["sys-title"]}>Blog &nbsp; Management</h1>
             </a>
 

@@ -37,6 +37,7 @@ class ImageGallery extends Component {
         cancelUpload:false//取消上传标记
     }
     async componentDidMount(){
+     // console.log(this.props.location.pathname);
         this.galleryInit();
     }
     //初始化
@@ -93,7 +94,7 @@ class ImageGallery extends Component {
       this.props.delGalleryFn(id,that.galleryInit);
     }
     /*---上传方法---*/
-    beforeUpload = async (file)=>{
+    beforeUpload = file => {
         const isImg = !!(typeList.indexOf(file.type)>-1);
         if (!isImg) {
             message.warning('请上传正确的图片格式');
@@ -223,8 +224,8 @@ class ImageGallery extends Component {
             <div>
                 <div style={{padding:'32px', height:'300px'}}>
                 <Dragger 
-                {...this.uploadProps} 
-                className={styles["my-upload"]} 
+                className={styles["my-upload"]}
+                multiple={false}
                 fileList={this.state.fileList}
                 beforeUpload={this.beforeUpload}
                 disabled={this.state.uploading}
@@ -288,12 +289,13 @@ class ImageGallery extends Component {
                     </div>
                 </div>
                 <Modal
-                    footer={null} closable={false}
+                    closable={false}
                     visible={this.state.visible}
                     onCancel={()=>this.setState({visible:false})}
                     footer={[
                       <Button key="submit" type="danger" onClick={()=>this.delImg(this.state.delId)}>删除</Button>
-                    ]}>
+                    ]}
+                    >
                     <img src={this.state.imgSrc} alt="" width='100%' />
                 </Modal>
                 <Modal

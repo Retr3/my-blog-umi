@@ -21,18 +21,21 @@ export default connect(state=>({
       type: "appHomeAbility/appAbilityFn"
     })
   })(
-    function({staticInfo,actionInfo,abilityInfo,getActionInfo,getStaticInfo,getAbilityInfo,loginrecord}) {
+    function({staticInfo,actionInfo,abilityInfo,getActionInfo,getStaticInfo,getAbilityInfo,loginrecord,location}) {
         const listName = ['服务器环境','服务器版本','CPU信息','内存容量'];
         const colorList = ['#40c9c6','#36a3f7','#f4516c','#ffba00'];
         const iconList = ['icon-system','icon-edition','icon-cpu','icon-memory'];
         const loginListIcon = ['icon-time','icon-user1','icon-location'];
+        // useEffect(() => {
+        //   console.log(location.pathname);
+        // },[location.pathname])
         //(待实现)每天0,6,12,18点取一次(定时器)更新abilityInfo
         useEffect(() => {
             getStaticInfo();
             getAbilityInfo();
           },[getAbilityInfo, getStaticInfo]);
         useEffect(() => {
-          const socket = io('https://api.mimiron.cn/actionlist', {
+          const socket = io('http://49.235.45.43:2333/actionlist', {
             query: {
               token: `Bearer ${window.localStorage.getItem("token")}`
             }
@@ -72,7 +75,7 @@ export default connect(state=>({
                                     <div className={`iconfont ${iconList[index]} ${styles["icon-panel"]}`} style={{fontSize:'36px',color:colorList[index]}}></div>
                                     <div className={styles["text-panel"]}>
                                     <div className={styles["text-title"]}>{listName[index]}</div>
-                                        <span className={styles["text-content"]}>{staticInfo[index]}</span>
+                                      <span style={index === 1?{fontSize:'12px'}:{fontSize:'18px'}}>{staticInfo[index]}</span>
                                     </div>
                                 </Card>
                             </Col>

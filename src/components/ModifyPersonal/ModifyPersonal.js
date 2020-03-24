@@ -82,8 +82,7 @@ class ModifyPersonal extends React.Component{
             <Col span={22}>
               <Form.Item>
                 {getFieldDecorator(`team[${k}]`, {
-                  initialValue:this.state.team[index]})
-                  (<Input placeholder="请输入团队"/>)}
+                  initialValue:this.state.team[index]})(<Input placeholder="请输入团队"/>)}
               </Form.Item>
             </Col>
             <Col span={2} style={{fontSize:'18px'}}>

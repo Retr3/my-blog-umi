@@ -118,7 +118,8 @@ class AddorUpdateArticle extends React.Component {
                 //具体相关展示与数据转换方法参考https://www.yuque.com/braft-editor/be/lzwpnr
                 const htmlContent = this.state.editorState.toHTML();
                 const rawJSON = this.state.editorState.toRAW(true);
-                const { updateId, tagsInfo } = this.props;
+                //const { updateId, tagsInfo } = this.props;
+                const { tagsInfo } = this.props;
                 // console.log('json',rawJSON);
                 // console.log('htmlis '+htmlContent);
                 let tags = [];

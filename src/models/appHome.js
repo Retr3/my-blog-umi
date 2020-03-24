@@ -5,11 +5,11 @@ function appHomeStatic(){
         return {data:res.data}
     })
 }
-function appHome(){
-    return axios.get("/api/actionoslist").then(res=>{
-        return {data:res.data}
-    })
-}
+// function appHome(){
+//     return axios.get("/api/actionoslist").then(res=>{
+//         return {data:res.data}
+//     })
+// }
 export default {
     namespace:"appHome",
     state:{
