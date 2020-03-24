@@ -10,11 +10,12 @@
 .logodom a{
   display: flex;
   align-items: center;
+  justify-content: center;
   height: 64px;
 }
 .logo{
   display: inline-block;
-  height: 18px;
+  height: 32px;
   vertical-align: middle;
 }
 .sys-title{
@@ -25,5 +26,16 @@
     font-size: 16px;
     vertical-align: middle;
     animation: fade-in;
-    animation-duration: .3s;
+    animation-duration: .8s;
+}
+@keyframes fade-in {
+  0%{
+    opacity: 0;
+  }
+  50%{
+    opacity: 0.5;
+  }
+  100%{
+    opacity: 1;
+  }
 }

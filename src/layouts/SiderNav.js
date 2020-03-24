@@ -122,7 +122,7 @@ class SiderNav extends React.Component{
           <div className={styles['logodom']}>
             <a href="/">
               <img src={logo} alt="log" className={styles['logo']}/>
-              <h1 className={styles["sys-title"]}>Blog &nbsp; Management</h1>
+              {!collapsed?<h1 className={styles["sys-title"]}>博客管理系统</h1>:''}
             </a>
 
           </div>
