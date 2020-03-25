@@ -13,6 +13,10 @@ import coverImg from '../../assets/images/cover.jpg';
 import avatarImg from '../../assets/images/avatar.jpg';
 const { TabPane } = Tabs;
 const imgTypeList = ['image/jpeg','image/jpg','image/png','image/gif','image/bmp'];
+const displayClick ={
+  color:'#333333',
+  cursor: 'not-allowed'
+}
 @connect(state=>({
   blackList:state.appBlackList.blackListInfo,
   tagsInfo:state.appTags.tags,
@@ -67,7 +71,8 @@ class Personal extends React.Component{
     ipValidateStatus:'',
     ipHelp:'',
     avatarLoad:true,
-    stateBlack:[]
+    stateBlack:[],
+    blackloading:false,
   };
   settingList = [{
     title:'修改密码',
@@ -103,7 +108,7 @@ class Personal extends React.Component{
     await this.initUserInfo();
     await this.props.getBlackListFn();
     this.setState({
-      stateBlack:this.props.blackList
+      stateBlack: this.props.blackList.slice(0 , 10)
     })
     loadImgAsync(coverImg).then(url=>{
       this.setState({
@@ -246,22 +251,6 @@ class Personal extends React.Component{
     message.success('复制成功');
   }
   //table
-  pagination={
-    showSizeChanger:true,
-    pageSizeOptions:['10','25','50'],
-    onShowSizeChange:(current, pageSize)=> {
-      const stateBlack = this.props.blackList.slice((current-1) * pageSize , pageSize);
-      this.setState({
-        stateBlack
-      })
-    },
-    onChange:(page, pageSize)=>{
-      const stateBlack = this.props.blackList.slice((page-1) * pageSize , pageSize);
-      this.setState({
-        stateBlack
-      })
-    }
-  }
   columns = [
     {
       title: 'ip',
@@ -276,7 +265,7 @@ class Personal extends React.Component{
       key: 'action',
       render: (text, record) => (
         <span>
-          <span className={styles['icon-action']}  onClick={()=>{this.props.delBlackListInfoFn(record.ip)}}>
+          <span style={this.state.blackloading?displayClick:{}} className={styles['icon-action']}  onClick={()=>this.state.displayClick?"":this.delBlackInfo(record.ip) }>
             <i className="iconfont icon-blacklist"></i>&nbsp;取消拉黑
           </span>
         </span>
@@ -302,13 +291,35 @@ class Personal extends React.Component{
     })
     this.confirmIp(value);
   }
-  addBlackInfo = () =>{
+  // 删除blackinfo
+  delBlackInfo = async ip =>{
+    this.setState({blackloading:true});
+    const { delBlackListInfoFn, getBlackListFn } = this.props;
+    await delBlackListInfoFn(ip);
+    await getBlackListFn();
+    this.setState({blackloading:false});
+    const stateBlack = this.props.blackList.slice(0,10);
+    this.setState({
+      stateBlack
+    })
+  }
+  // 添加blackinfo
+  addBlackInfo = async () =>{
     let { blackIp } = this.state;
-    const { addBlackListInfoFn } = this.props;
+    const { addBlackListInfoFn, getBlackListFn } = this.props;
     let flag = this.confirmIp(blackIp);
     if(flag){
-      addBlackListInfoFn(blackIp);
-      this.setState({modelVisible:false,ipHelp:'',ipValidateStatus:''})
+      await addBlackListInfoFn(blackIp);
+      await getBlackListFn();
+      const stateBlack = this.props.blackList.slice(0,10);
+      this.setState({
+        modelVisible:false,
+        ipHelp:'',
+        ipValidateStatus:'',
+        stateBlack
+      },()=>{
+        console.log(this.state.stateBlack)
+      })
     }
   }
   confirmIp = value =>{
@@ -348,6 +359,23 @@ class Personal extends React.Component{
   render(){
     const { avatarUrl, nickname, occupation, company, location, team, autograph, tags, tagInputVisible, tagValue, loading, percent,modelVisible, ModifyPasswordVisible, tagsVisible, ipValidateStatus, ipHelp, avatarLoad, ModifyPersonalVis, stateBlack } = this.state;
     const { blackList } = this.props;
+    const pagination = {
+      showSizeChanger:true,
+      pageSizeOptions:['10','25','50'],
+      total:blackList.length,
+      onShowSizeChange:(current, pageSize)=> {
+        const stateBlack = this.props.blackList.slice((current-1) * pageSize , pageSize*current);
+        this.setState({
+          stateBlack
+        })
+      },
+      onChange:(page, pageSize)=>{
+        const stateBlack = this.props.blackList.slice((page-1) * pageSize , pageSize*page);
+        this.setState({
+          stateBlack
+        })
+      }
+    }
     const headers = window.localStorage.getItem("token")?{"Authorization": `Bearer ${window.localStorage.getItem("token")}`}:''
     const teamImg = 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
       return (
@@ -435,8 +463,8 @@ class Personal extends React.Component{
                   <Table 
                     loading={false}
                     columns={this.columns} 
-                    dataSource={(blackList && blackList.length>0)?blackList.slice(0,10).map(item=>({...item,key:item.id})):[]} 
-                    pagination={this.pagination}
+                    dataSource={stateBlack?stateBlack.map(item=>({...item,key:item.id})):[]} 
+                    pagination={pagination}
                   />
                 </TabPane>
               </Tabs>

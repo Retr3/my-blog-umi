@@ -132,6 +132,7 @@ class Visitor extends React.Component{
       loading:true
     })
     await this.props.delBlackListInfoFn(key);
+    await this.props.getBlackListFn();
     this.setState({
       loading:false
     })
@@ -141,6 +142,7 @@ class Visitor extends React.Component{
       loading:true
     })
     await this.props.addBlackListInfoFn(key,location);
+    await this.props.getBlackListFn();
     this.setState({
       loading:false
     })

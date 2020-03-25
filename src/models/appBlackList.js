@@ -1,5 +1,4 @@
 import axios from "axios";
-import getLocation from '../utils/fixedPosition.js';
 import getFootprint from '../utils/getFootprint.js';
 import { message, notification } from 'antd';
 //获取黑名单列表
@@ -40,12 +39,10 @@ export default {
                 message.error(`黑名单初始化失败`);
             }
         },
-        *addBlackListInfoFn({ip},{call,put}){
+        *addBlackListInfoFn({ip,location},{call,put}){
             try{
-                const fixIp = yield getLocation();
-                let location = '无定位';
-                if( fixIp ){
-                  const footprint = yield getFootprint(fixIp);
+                if( !location ){
+                  const footprint = yield getFootprint(ip);
                   location = !!footprint? footprint : '无定位';
                 }
                 const { code, message } = yield call(addBlackListInfo,ip,location);
@@ -73,7 +70,7 @@ export default {
                 switch (code) {
                     case 0:
                       notification.success({message, duration:1});
-                      yield put({ type: "getBlackListFn"});
+                      // yield put({ type: "getBlackListFn"});
                       break;
                     case -1:
                       notification.warning({message, duration:1});
@@ -92,7 +89,7 @@ export default {
                 const { code, message } = yield call(delBlackListInfo,ip);
                 if(code === 0){
                     notification.success({message,duration:1});
-                    yield put({ type: "getBlackListFn"});
+                    // yield put({ type: "getBlackListFn"});
                 }else{
                     notification.error({message,duration:1});
                 }
