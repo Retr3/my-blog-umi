@@ -14,11 +14,11 @@ const displayClick ={
   blackList:state.appBlackList.blackListInfo
 }),{
   //列表
-  getShowVisitorInfoFn: () => ({
-    type: "appVisitor/getShowVisitorInfoFn"
+  getShowVisitorInfoFn: (page, pagesize) => ({
+    type: "appVisitor/getShowVisitorInfoFn", page, pagesize
   }),
-  getLoginVisitorInfoFn: () => ({
-    type: "appVisitor/getLoginVisitorInfoFn"
+  getLoginVisitorInfoFn: (page, pagesize) => ({
+    type: "appVisitor/getLoginVisitorInfoFn", page, pagesize
   }),
   getVisitorStaticInfoFn: () => ({
     type: "appVisitor/getVisitorStaticInfoFn"
@@ -36,7 +36,9 @@ const displayClick ={
 })
 class Visitor extends React.Component{
   state={
-    loading:false
+    loading:false,
+    vistotal:0,
+    logintotal:0
   }
   columns = [
     {
@@ -118,18 +120,11 @@ class Visitor extends React.Component{
         </span>
       )
     }];
-  pagination={
-    showSizeChanger:true,
-    pageSizeOptions:['10','25','50'],
-    onShowSizeChange:(current, pageSize)=> {
-      console.log(current, pageSize);
-    }
-  }
   async componentDidMount(){
     const {getShowVisitorInfoFn,getLoginVisitorInfoFn,getBlackListFn,getVisitorStaticInfoFn} = this.props;
     await getBlackListFn();
-    await getShowVisitorInfoFn();
-    await getLoginVisitorInfoFn();
+    await getShowVisitorInfoFn(1,10);
+    await getLoginVisitorInfoFn(1,10);
     getVisitorStaticInfoFn();
   }
   delBlackList = async key => {
@@ -152,6 +147,29 @@ class Visitor extends React.Component{
   }
   render(){
     const { showVisitorInfo, loginVisitorInfo, blackList, staticData } = this.props;
+    const {monthCount,loginData} = staticData;
+    const visPagination = {
+        showSizeChanger:true,
+        pageSizeOptions:['10','25','50'],
+        total: monthCount,
+        onShowSizeChange:(current, pageSize)=> {
+          this.props.getLoginVisitorInfoFn(current, pageSize);
+        },
+        onChange:(page, pageSize)=>{
+          this.props.getShowVisitorInfoFn(page, pageSize);
+        }
+    }
+  const loginPagination = {
+      showSizeChanger:true,
+      pageSizeOptions:['10','25','50'],
+      total: loginData,
+      onShowSizeChange:(current, pageSize)=> {
+        this.props.getLoginVisitorInfoFn(current, pageSize);
+      },
+      onChange:(page, pageSize)=>{
+        this.props.getLoginVisitorInfoFn(page, pageSize);
+      }
+  }
     return (
       <div className={styles['visitor-dom']}>
         <Row gutter={[16,16]}>
@@ -185,8 +203,9 @@ class Visitor extends React.Component{
                       let blackFlag = !!blackList.find(value=>value.ip===item.ip)
                       return {...item,blackFlag, key:('visit'+index)}
                     }):[]} 
-                    pagination={this.pagination}
+                    pagination={visPagination}
                   />
+                  {/* <Pagination/> */}
                 </TabPane>
                 <TabPane
                   tab={<span><Icon type="key" />后台登录记录</span>}
@@ -199,7 +218,7 @@ class Visitor extends React.Component{
                       let blackFlag = !!blackList.find(value=>value.ip===item.login_ip)
                       return {...item,blackFlag, key:('login'+index)}
                     }):[]} 
-                    pagination={this.pagination}
+                    pagination={loginPagination}
                   />
                 </TabPane>
               </Tabs>

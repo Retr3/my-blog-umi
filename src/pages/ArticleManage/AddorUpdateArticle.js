@@ -59,7 +59,6 @@ class AddorUpdateArticle extends React.Component {
     }
     async componentDidMount(){
         const { updateId, getArticleInfoFn, getTagsFn } = this.props;
-        console.log(updateId);
         await getTagsFn();
         if(!!updateId){
             await getArticleInfoFn(updateId);
@@ -111,7 +110,7 @@ class AddorUpdateArticle extends React.Component {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if(!err){
-                console.log('Received values of form: ', values);
+                // console.log('Received values of form: ', values);
                 // 编辑器内容提交到服务端之前，可直接调用editorState.toHTML()来获取HTML格式的内容
                 //虽然html字符串也可以用于持久化存储，但是对于比较复杂的富文本内容，在反复编辑的过程中，可能会存在格式丢失的情况，
                 //比较标准的做法是在数据库中同时存储raw字符串和html字符串，分别用于再次编辑和前台展示。
@@ -129,7 +128,7 @@ class AddorUpdateArticle extends React.Component {
                 //   tags = values.article_tags.join(',');
                 // }
                 tags = this.tagsValueToId(values.article_tags,tagsInfo);
-                console.log(tags);
+                // console.log(tags);
                 this.props.addOrUdpateArticleFn({
                     id:this.props.updateId,
                     article_title:values.article_title,
@@ -144,7 +143,7 @@ class AddorUpdateArticle extends React.Component {
     }
     handleEditorChange = (editorState) => {
       this.setState({ editorState })
-      console.log(editorState.toHTML())
+      // console.log(editorState.toHTML())
     }
     beforeUpload = file => {
       const isImg = !!(imgTypeList.indexOf(file.type)>-1);
@@ -164,7 +163,7 @@ class AddorUpdateArticle extends React.Component {
     uploadHandleChange = info => {
         const { status } = info.file;
         if (status !== 'uploading') {
-          console.log(info.file, info.fileList);
+         // console.log(info.file, info.fileList);
         }
         if (status === 'done') {
           if(info.file.response.code === 0){

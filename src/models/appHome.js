@@ -48,7 +48,7 @@ export default {
         actionInit(state, action) {
             const memDv = new DataView();
             const cpuDv = new DataView();
-            console.log(action.actionInfo);
+            // console.log(action.actionInfo);
             let memData = [
                 {
                 item: "内存使用",

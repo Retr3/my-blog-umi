@@ -43,7 +43,7 @@ class AppRegisterForm extends React.Component {
               })
               return
         }
-        console.log('values of form: ', values);
+        // console.log('values of form: ', values);
         this.props.dispatch({type:"appRegister/registerFn",registerInfo:{...values,formObj:this.props.form}})
       }
     });

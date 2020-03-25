@@ -31,10 +31,10 @@ class ModifyPersonal extends React.Component{
         let that = this;
         await form.validateFields(async(err, values) => {
             if (!err) {
-                console.log('Received values of form: ', values);
+               // console.log('Received values of form: ', values);
                 const {nickname, sign, occupation, company, location, team} = values;
                 const teams = !!team && team.length>0?team.filter(item=> !!item):[];
-                console.log(teams);
+               // console.log(teams);
                 await updatePersonalInfoFn({ userinfo: {nickname, sign, occupation, company, location, team:teams.join(',')}, userid: JSON.parse(window.localStorage.getItem('userinfo')).userid });
                 if(that.props.isSuccess){
                   that.props.initUserInfo();

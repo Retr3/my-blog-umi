@@ -21,7 +21,6 @@ export default {
                     newData.push({day,type:'内存使用率',percentage:Number(item.memoryper_forms)},
                         {day,type:'CPU使用率',percentage:Number(item.cpuper_forms)})
                 })
-                console.log(newData);
                 yield put({ type: "abilityInit", newData });
             }catch(err){
                 console.log(err);

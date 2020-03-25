@@ -22,7 +22,7 @@ class ModifyPassword extends React.Component{
         let {rePasswordFn,repasswordModel,form} = this.props;
         form.validateFields(async(err, values) => {
             if (!err) {
-                console.log('Received values of form: ', values);
+               // console.log('Received values of form: ', values);
                 let {oldpassword,newpassword} = values;
                 await rePasswordFn({oldpassword,newpassword});
                 repasswordModel(!!(this.props.errorFlag<0))

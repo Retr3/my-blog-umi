@@ -31,7 +31,7 @@ export default {
                         const size = (item.size ==='1x1')?'1x1':'1x2';
                         return {id:item.id, groups:item.type.split(','), src: 'https://api.mimiron.cn'+item.imagepath,size,style}
                     })
-                    console.log(newData)
+                   // console.log(newData)
                     yield put({ type: "setGalleryInfo",newData});
                 }
             }catch(err){

@@ -1,14 +1,14 @@
 import axios from "axios";
 import { message } from 'antd';
 //获取前台访客信息表
-function getShowVisitorInfo(){
-    return axios.get("/api/visitor").then(res=>{
+function getShowVisitorInfo({page, pagesize}){
+    return axios.get("/api/visitor", {params:{page, pagesize}}).then(res=>{
         return {listData:res.data};
     });
 }
 //获取后台登录信息表
-function getLoginVisitorInfo(){
-    return axios.get('/api/loginrecord').then(res=>{
+function getLoginVisitorInfo({page, pagesize}){
+    return axios.get('/api/loginrecord', {params:{page, pagesize}}).then(res=>{
         return {listData:res.data};
     });
 }
@@ -16,6 +16,12 @@ function getLoginVisitorInfo(){
 function getVisitorStaticInfo(){
     return axios.get('/api/visitorstatic').then(res=>{
         return {staticData:res.data}
+    });
+}
+//获取后台30天登陆数
+function getLoginStaticInfo(){
+    return axios.get('/api/loginrecordcount').then(res=>{
+        return {loginData:res.data.count}
     });
 }
 export default {
@@ -27,9 +33,9 @@ export default {
     },
     effects:{
         //获取前台访客记录
-        *getShowVisitorInfoFn(obj,{call,put}){
+        *getShowVisitorInfoFn({page, pagesize},{call,put}){
             try{
-                const { listData } = yield call(getShowVisitorInfo);
+                const { listData } = yield call(getShowVisitorInfo,{page, pagesize});
                 if(listData){
                     yield put({ type: "setShowVisitorInfo",listData});
                 }else{
@@ -40,9 +46,9 @@ export default {
                 message.error(`数据查询失败`);
             }
         },
-        *getLoginVisitorInfoFn(obj,{call,put}){
+        *getLoginVisitorInfoFn({page, pagesize},{call,put}){
             try{
-                const { listData } = yield call(getLoginVisitorInfo);
+                const { listData } = yield call(getLoginVisitorInfo,{page, pagesize});
                 if(listData){
                     yield put({ type: "setLoginVisitorInfo",listData});
                 }else{
@@ -56,7 +62,9 @@ export default {
         *getVisitorStaticInfoFn(obj,{call,put}){
             try{
                 const { staticData } = yield call(getVisitorStaticInfo);
-                if(staticData){
+                const { loginData } = yield call(getLoginStaticInfo);
+                if(staticData && loginData){
+                    staticData.loginData = loginData;
                     yield put({ type: "setVisitorStaticInfo",staticData});
                 }else{
                     message.error(`数据查询失败`);

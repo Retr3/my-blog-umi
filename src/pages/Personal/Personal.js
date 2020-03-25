@@ -66,7 +66,8 @@ class Personal extends React.Component{
     blackIp:'',
     ipValidateStatus:'',
     ipHelp:'',
-    avatarLoad:true
+    avatarLoad:true,
+    stateBlack:[]
   };
   settingList = [{
     title:'修改密码',
@@ -98,9 +99,12 @@ class Personal extends React.Component{
       this.personInfo(true);
       }}  key="article-tags">修改</a>]
   }]
-  componentDidMount(){
-    this.props.getBlackListFn();
-    this.initUserInfo();
+  async componentDidMount(){
+    await this.initUserInfo();
+    await this.props.getBlackListFn();
+    this.setState({
+      stateBlack:this.props.blackList
+    })
     loadImgAsync(coverImg).then(url=>{
       this.setState({
         avatarLoad:false
@@ -148,7 +152,7 @@ class Personal extends React.Component{
     if (tagValue && tags.findIndex(item=>tagValue === item.content) === -1) {
       tags = [...tags, {userid:JSON.parse(window.localStorage.getItem('userinfo')).userid,content:tagValue}];
     }
-    console.log(tags);
+    //console.log(tags);
     this.setState({
       tags,
       tagInputVisible: false,
@@ -190,7 +194,7 @@ class Personal extends React.Component{
   uploadChange = async info => {
     const { status } = info.file;
     if (status !== 'uploading') {
-      console.log(info.file.percent);
+      // console.log(info.file.percent);
     }
     if (status === 'done') {
       this.setState({
@@ -246,7 +250,16 @@ class Personal extends React.Component{
     showSizeChanger:true,
     pageSizeOptions:['10','25','50'],
     onShowSizeChange:(current, pageSize)=> {
-      console.log(current, pageSize);
+      const stateBlack = this.props.blackList.slice((current-1) * pageSize , pageSize);
+      this.setState({
+        stateBlack
+      })
+    },
+    onChange:(page, pageSize)=>{
+      const stateBlack = this.props.blackList.slice((page-1) * pageSize , pageSize);
+      this.setState({
+        stateBlack
+      })
     }
   }
   columns = [
@@ -333,7 +346,7 @@ class Personal extends React.Component{
     await this.child.submitPersonal();
   }
   render(){
-    const { avatarUrl, nickname, occupation, company, location, team, autograph, tags, tagInputVisible, tagValue, loading, percent,modelVisible, ModifyPasswordVisible, tagsVisible, ipValidateStatus, ipHelp, avatarLoad, ModifyPersonalVis } = this.state;
+    const { avatarUrl, nickname, occupation, company, location, team, autograph, tags, tagInputVisible, tagValue, loading, percent,modelVisible, ModifyPasswordVisible, tagsVisible, ipValidateStatus, ipHelp, avatarLoad, ModifyPersonalVis, stateBlack } = this.state;
     const { blackList } = this.props;
     const headers = window.localStorage.getItem("token")?{"Authorization": `Bearer ${window.localStorage.getItem("token")}`}:''
     const teamImg = 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
@@ -422,7 +435,7 @@ class Personal extends React.Component{
                   <Table 
                     loading={false}
                     columns={this.columns} 
-                    dataSource={blackList.map(item=>({...item,key:item.id}))} 
+                    dataSource={(blackList && blackList.length>0)?blackList.slice(0,10).map(item=>({...item,key:item.id})):[]} 
                     pagination={this.pagination}
                   />
                 </TabPane>

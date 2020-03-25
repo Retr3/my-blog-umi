@@ -36,7 +36,7 @@ export default {
         //添加或修改
         *addOrUdpateArticleFn({ articleData,toggleFn, reloadFn },{call, put}){
             try{
-                console.log(articleData);
+               // console.log(articleData);
                 let code, msg;
                 //true修改/false添加
                 if(!!articleData.id){

@@ -67,7 +67,7 @@ class AppLoginForm extends React.Component {
           return
         }
         let redirect = (!!this.props.redirpath?this.props.redirpath:'/index');
-        console.log('Received values of form: ', redirect);
+        // console.log('Received values of form: ', redirect);
         this.props.dispatch({type:"appLogin/login",payload:{...values,redirect,formObj:this.props.form}});
       }
     });

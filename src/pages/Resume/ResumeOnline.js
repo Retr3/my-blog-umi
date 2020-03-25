@@ -180,7 +180,7 @@ class Resumeonline extends React.Component{
           values.skills = !!values.skills? values.skills.filter(item=>!!item === true): '';
           values.slider = !!values.slider? values.slider.filter(item=>!!item === true): '';
           const { id, experient_tree_list, skill_id_list, userid } = this.props.resumeInfo;
-          console.log(values);
+          // console.log(values);
           this.props.setResumeInfo({
             name: values.resumename,
             sex: values.sex,

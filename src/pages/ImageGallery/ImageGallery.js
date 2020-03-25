@@ -191,7 +191,7 @@ class ImageGallery extends Component {
       handleModel = ()=>{
         this.props.form.validateFields((err, values) => {
             if(!err){
-                console.log(values);
+                // console.log(values);
                 this.setState({
                     typeVisible:false,
                     type:values.type.join(',')

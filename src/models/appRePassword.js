@@ -15,7 +15,6 @@ export default {
             try {
               const data = { userid: JSON.parse(window.localStorage.getItem('userinfo')).userid, password: payload };
               const {code} = yield call(appRePassword,data);
-              console.log(code);
                 if(code === 0){
                     message.success(`密码修改成功,下次登录时生效`);
                     yield put({ type: "changeErrorFlag",code})
@@ -32,7 +31,6 @@ export default {
     },
     reducers: {
         changeErrorFlag(state,action){
-            console.log(action);
             return {errorFlag:action.code}
         }
     }

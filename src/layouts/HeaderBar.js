@@ -40,7 +40,7 @@ class HeaderBar extends React.Component {
     screenfull.off('change')
   }
   screenfullToggle = () =>{
-    console.log(screenfull);
+   // console.log(screenfull);
     if (screenfull.isEnabled) {
       screenfull.toggle()
     }

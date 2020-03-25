@@ -36,7 +36,6 @@ export default {
         },
         *updateResumeInfo({formData, resumeId, that},{call, put}){
             try{
-                console.log(formData);
                 const { code } = yield call(setResumeInfo,{formData,resumeId});
                 if(code === 0){
                     that.resumeInit();
